@@ -40,6 +40,41 @@
     text-rendering: optimizeLegibility;
     font-size: 16px;
     line-height: 1.55;
+    position: relative;
+  }
+
+  /* ─────────── Veil gradient + grain ───────────
+     Two fixed layers behind everything. The gradient is a soft mesh of three
+     radial blooms — blush from --terracotta (top-left), pale slate from --navy
+     (right), warm sand bottom-center — over the existing --bg. Whisper intensity
+     means a near---bg white veil sits on top so the whole thing reads as one
+     barely-tinted neutral. Grain breaks up any banding on the larger fields. */
+  :root {
+    --blush:      #EFDED2;   /* pastel from --terracotta */
+    --slate-pale: #DCE4E8;   /* pastel from --navy       */
+    --warm-sand:  #ECE7E1;   /* a third anchor for depth */
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      /* Whisper veil — fades the mesh below toward --bg so it reads near-neutral */
+      linear-gradient(rgba(243,244,243,0.50), rgba(243,244,243,0.50)),
+      radial-gradient(80% 50% at 15% 0%,   var(--blush)      0%, transparent 55%),
+      radial-gradient(70% 60% at 100% 40%, var(--slate-pale) 0%, transparent 60%),
+      radial-gradient(60% 50% at 40% 100%, var(--warm-sand)  0%, transparent 65%),
+      var(--bg);
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
 
   ::selection { background: var(--blue); color: var(--navy); }
@@ -123,11 +158,13 @@
   /* ─────────── Header ─────────── */
   header.site {
     border-bottom: 1px solid var(--border);
-    background: var(--bg);
+    /* Translucent so the veil gradient shows through while keeping legibility */
+    background: rgba(243, 244, 243, 0.72);
     position: sticky;
     top: 0;
     z-index: 50;
-    backdrop-filter: saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
   }
   .nav {
     display: flex;
@@ -209,7 +246,9 @@
     top: 72px;
     left: 0;
     right: 0;
-    background: var(--bg);
+    background: rgba(243, 244, 243, 0.92);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     z-index: 49;
     transform: translateY(-12px);
@@ -304,6 +343,39 @@
   }
   .hero .trust .dot { width: 6px; height: 6px; border-radius: 50%; background: #4F9D6A; box-shadow: 0 0 0 4px rgba(79,157,106,0.15); }
 
+  /* Small caption under the demo chat — ties the visible demo to the real,
+     interactive agent (Sunni) without a floating bubble. The ↑ points up at
+     the chat above; the link opens Sunni in the side drawer. */
+  /* Hero/demo chat column — flex wrapper so the chat card + caption stay paired */
+  .hero-chat-col,
+  .demo-chat-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  .demo-chat-note {
+    text-align: center;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+  }
+  .demo-chat-note .arrow {
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-right: 5px;
+    display: inline-block;
+    transform: translateY(1px);
+  }
+  .demo-chat-note a {
+    color: var(--terracotta);
+    font-weight: 500;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+  }
+  .demo-chat-note a:hover { color: #A24E2C; }
+
   /* ─────────── Chat surface ─────────── */
   .chat-card {
     background: #fff;
@@ -334,7 +406,7 @@
     background: var(--mustard);
     border-radius: 50%;
     box-shadow: 0 0 0 0 rgba(197,154,61,0.55);
-    animation: pulse 2s infinite;
+    animation: pulse 3.5s infinite;
   }
   @keyframes pulse {
     0%   { box-shadow: 0 0 0 0 rgba(197,154,61,0.55); }
@@ -541,6 +613,16 @@
     align-items: start;
     position: relative;
   }
+  .step .week {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+  }
   .step .num {
     width: 56px; height: 56px;
     border-radius: 50%;
@@ -565,7 +647,11 @@
   }
   .step p { margin: 8px auto 0; font-size: 14px; line-height: 1.55; color: var(--text); max-width: 250px; }
 
-  /* Single-grid timeline — circles centered above their titles */
+  /* Single-grid timeline — circles centered above their titles.
+     Note: the dashed connector that used to live in .steps::before was removed
+     because the new “Week N” labels above each circle pushed the circles down,
+     and a connector that tracks them cleanly is fussier than the Week labels
+     are worth as guidance. Numbers + labels carry the rhythm. */
   .steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -578,25 +664,16 @@
     z-index: 1;
   }
   .steps .num { margin: 0 auto; }
-  /* Dashed line behind, from center of col 1 to center of col 3 */
-  .steps::before {
-    content: "";
-    position: absolute;
-    top: 28px; /* center of 56px circle */
-    left: calc(100% / 6);
-    right: calc(100% / 6);
-    border-top: 1.5px dashed #B3CBD3;
-    z-index: 0;
-  }
   @media (max-width: 720px) {
     .steps { grid-template-columns: 1fr; gap: 36px; }
-    .steps::before { display: none; }
   }
 
   .step-row { display: none; }
 
   /* ─────────── Demo section ─────────── */
-  .demo-section { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  /* Translucent bg-alt over the veil — enough to mark the tonal step from
+     adjacent transparent sections while letting the gradient still breathe. */
+  .demo-section { background: rgba(236, 238, 237, 0.62); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .demo-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
   .demo-head .left h2 { margin-top: 12px; }
   .demo-head .meta { font-size: 13px; color: var(--muted); max-width: 320px; }
@@ -793,7 +870,7 @@
   }
 
   /* ─────────── FAQ ─────────── */
-  .faq-section { background: var(--bg-alt); border-top: 1px solid var(--border); }
+  .faq-section { background: rgba(236, 238, 237, 0.62); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .faq-grid {
     display: grid;
     grid-template-columns: 0.7fr 1.3fr;
@@ -842,26 +919,80 @@
   .help-email { color: var(--terracotta); font-weight: 500; border-bottom: 1px solid currentColor; }
 
   /* ─────────── CTA band ─────────── */
-  .cta-band { background: var(--bg); padding: 88px 0; border-top: 1px solid var(--border); }
-  .cta-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 56px 56px 52px;
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 40px;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
+  /* Warm blush band — derived from --terracotta, sits distinct from every other
+     section on the page and creates a deliberate warm closing moment before
+     the navy footer. Italic-serif accent stays the same color as the rest of
+     the headline so it reads as type emphasis, not color contrast. */
+  .cta-band {
+    background: rgba(239, 222, 210, 0.3);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 110px 0 104px;
   }
-  @media (max-width: 880px) { .cta-card { grid-template-columns: 1fr; padding: 40px; } }
-  .cta-card h2 { font-size: clamp(32px, 3.6vw, 44px); }
-  .cta-card .italic-accent { margin-top: 14px; display: block; font-size: 18px; }
-  .cta-card .actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
-  @media (max-width: 880px) { .cta-card .actions { justify-content: flex-start; } }
-  .cta-card::after { content: none; }
-  .cta-card::before { content: none; }
+  .cta-card {
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+    max-width: 720px;
+    margin: 0 auto;
+    box-shadow: none;
+  }
+  .cta-card .eyebrow { margin-bottom: 18px; }
+  .cta-card h2 {
+    font-size: clamp(40px, 5.2vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .cta-card h2 em {
+    font-family: var(--serif-italic);
+    font-style: italic;
+    font-weight: 400;
+    color: inherit;
+  }
+  .cta-card .cta-sub {
+    margin: 22px 0 0;
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 460px;
+    text-wrap: pretty;
+  }
+  .cta-card .actions {
+    margin-top: 34px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta-card .cta-meta {
+    margin: 32px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cta-card .cta-meta .dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(25, 65, 82, 0.25);
+    flex-shrink: 0;
+  }
+  @media (max-width: 720px) {
+    .cta-band { padding: 72px 0 68px; }
+    .cta-card h2 { font-size: clamp(32px, 8vw, 44px); }
+    .cta-card .cta-meta { gap: 6px; font-size: 12px; }
+  }
 
   /* ─────────── Footer ─────────── */
   footer.site {
@@ -870,7 +1001,7 @@
   }
   .footer-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr 1fr;
     gap: 40px;
     /* longhand so .wrap's horizontal padding survives */
     padding-top: 72px;
@@ -1099,8 +1230,411 @@
   .sunni-drawer { touch-action: manipulation; }
   .sunni-foot { touch-action: manipulation; }
 
+  /* ─────────── Core audience grid (narrowed industries) ───────────
+     Three taller, content-rich cards instead of nine generic tiles. Same
+     bordered-grid vocabulary as the old industries; keeps it operational. */
+  .core-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 44px;
+    border-top: 1px solid var(--border-strong);
+    border-left: 1px solid var(--border-strong);
+  }
+  @media (max-width: 880px) { .core-grid { grid-template-columns: 1fr; } }
+  .core-card {
+    padding: 36px 32px 34px;
+    border-right: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 360px;
+  }
+  .core-card .num {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .core-card h4 {
+    font-family: var(--display);
+    font-size: 24px;
+    text-transform: none;
+    letter-spacing: -0.005em;
+    color: var(--navy);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .core-card .desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0;
+  }
+  .core-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .core-card li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .core-card li .tick {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .core-card .sub {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* “Also fits” row — quiet secondary tags so the page still welcomes
+     adjacent categories without claiming experience in them. */
+  .also-fits {
+    margin-top: 32px;
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .also-fits .also-label {
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .also-fits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .also-fits li {
+    font-size: 13px;
+    color: var(--text);
+    background: rgba(255,255,255,0.55);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    line-height: 1.2;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  /* ─────────── Before / After (minimal comparison) ───────────
+     Two columns. Before items use a short en-dash marker in muted grey; after
+     items use a small terracotta dot in full navy. No icons, no green/red,
+     no transformation language — just a side-by-side of operational reality. */
+  .ba-section {
+    padding: 96px 0;
+    background: rgba(236, 238, 237, 0.62);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .ba-head {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 880px) { .ba-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; } }
+  .ba-head h2 { margin-top: 12px; }
+  .ba-head .lede { max-width: 460px; color: var(--text); }
+
+  .ba-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--border-strong);
+  }
+  @media (max-width: 720px) { .ba-grid { grid-template-columns: 1fr; } }
+  .ba-col {
+    padding: 32px 36px 36px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .ba-col + .ba-col {
+    border-left: 1px solid var(--border-strong);
+  }
+  @media (max-width: 720px) {
+    .ba-col + .ba-col { border-left: none; border-top: 1px solid var(--border); }
+    .ba-col { padding: 28px 4px 32px; }
+  }
+  .ba-col .ba-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 24px;
+  }
+  .ba-col.is-after .ba-label { color: var(--terracotta); }
+  .ba-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ba-col li {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .ba-col.is-before li {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .ba-col.is-after li {
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .ba-col li::before {
+    content: "";
+    flex-shrink: 0;
+    transform: translateY(-3px);
+  }
+  .ba-col.is-before li::before {
+    width: 14px; height: 1px;
+    background: currentColor;
+    opacity: 0.55;
+    transform: translateY(-5px);
+  }
+  .ba-col.is-after li::before {
+    width: 6px; height: 6px;
+    background: var(--terracotta);
+    border-radius: 50%;
+  }
+
+  /* ─────────── Integrations grid ───────────
+     Six logo-style cards. Each card uses a small monogram mark in the brand's
+     approximate dominant color — enough to feel recognizable, not enough to
+     pretend to be the real logo. Cards stay quiet so the overall section still
+     reads minimal. */
+  .int-section {
+    padding: 96px 0;
+    background: rgba(236, 238, 237, 0.62);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .int-head {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 880px) { .int-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; } }
+  .int-head h2 { margin-top: 12px; }
+  .int-head .lede { max-width: 480px; color: var(--text); }
+
+  .int-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 880px) { .int-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .int-grid { grid-template-columns: 1fr; } }
+  .int-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .int-card .mark {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    display: grid; place-items: center;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.04) inset;
+  }
+  .int-card .info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .int-card .name {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--navy);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .int-card .cat {
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .int-foot {
+    margin-top: 32px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .int-foot strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* Section rhythm ─ the alternating tinted/clear pattern needs visible
+     hairlines on the clear sections too so each section reads as discrete.
+     The blue and dark sections handle their own borders. */
+  #industries { border-top: 1px solid var(--border); }
+  .handoff-section { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
   /* hide injected mention attribute side effects */
   [data-screen-label] { /* nothing */ }
+
+  /* ─────────── Handoff / escalation ───────────
+     Calm reassurance section. Operationally framed ("here is what happens")
+     rather than promotional. Uses the existing border/typography vocabulary so
+     it reads as a continuation of How It Works, not a new visual idea. */
+  .handoff-section { padding: 96px 0; }
+  .handoff-head {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 880px) {
+    .handoff-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; }
+  }
+  .handoff-head h2 { margin-top: 12px; }
+  .handoff-head .lede { max-width: 480px; color: var(--text); }
+
+  /* Shared close-line for sections ending in a single pull statement.
+     Used by Handoff and Pricing. Sits a touch smaller than an h2 so it reads
+     as a closing thought, not another headline. */
+  .handoff-close,
+  .cost-close {
+    margin: 48px auto 0;
+    max-width: 720px;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(18px, 1.8vw, 22px);
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    color: var(--navy);
+  }
+  .handoff-close em,
+  .cost-close em {
+    font-family: var(--serif-italic);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--terracotta);
+  }
+
+  .handoff-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border-strong);
+    border-left: 1px solid var(--border-strong);
+  }
+  @media (max-width: 880px) { .handoff-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .handoff-grid { grid-template-columns: 1fr; } }
+  .handoff-card {
+    padding: 30px 28px 34px;
+    border-right: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .handoff-card .step-num {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .handoff-card .label {
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .handoff-card p {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .handoff-card .glyph {
+    color: var(--navy);
+    display: flex;
+  }
+  .handoff-card .glyph svg { width: 22px; height: 22px; }
+
+  .handoff-foot {
+    margin-top: 44px;
+    padding-top: 36px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .handoff-foot .pull {
+    font-family: var(--display);
+    font-size: clamp(22px, 2.4vw, 30px);
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+    max-width: 760px;
+  }
+  .handoff-foot .pull em {
+    font-family: var(--serif-italic);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--terracotta);
+  }
 </style>
 </head>
 <body data-screen-label="Sunday Relay Landing">
@@ -1113,6 +1647,7 @@
         <a href="#how" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">How it works</a>
         <a href="#demo" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">Demo</a>
         <a href="#industries" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">Industries</a>
+        <a href="#integrations" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">Integrations</a>
         <a href="#pricing" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">Pricing</a>
         <a href="#faq" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">FAQ</a>
       </nav>
@@ -1126,6 +1661,7 @@
       <a href="#how" data-mobile-link>How it works</a>
       <a href="#demo" data-mobile-link>Demo</a>
       <a href="#industries" data-mobile-link>Industries</a>
+      <a href="#integrations" data-mobile-link>Integrations</a>
       <a href="#pricing" data-mobile-link>Pricing</a>
       <a href="#faq" data-mobile-link>FAQ</a>
       <div class="mobile-cta">
@@ -1143,7 +1679,7 @@
       <h1>Your website should do more than sit there.</h1>
       <p class="lede">Sunday Relay builds AI agents that answer questions, book appointments, and help customers help themselves — quietly, on your domain, in your voice.</p>
       <div class="cta-row">
-        <a href="#" class="btn btn-primary">Book a demo</a>
+        <a href="#" class="btn btn-primary">Book a consult</a>
         <a href="#how" class="btn btn-secondary" style="border-color: rgb(25, 65, 82); color: rgb(25, 65, 82)">See how it works</a>
       </div>
       <div class="hero-facts">
@@ -1156,22 +1692,27 @@
     </div>
 
     <!-- Hero chat -->
-    <div class="chat-card" id="heroChat">
-      <div class="chat-head">
-        <span class="live-pill"><span class="pulse"></span> LIVE</span>
-        <span class="channel">Website chat</span>
-        <span class="site-name">Paragon Jiu-Jitsu</span>
-        <button class="close" aria-label="Close">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
+    <div class="hero-chat-col">
+      <div class="chat-card" id="heroChat">
+        <div class="chat-head">
+          <span class="live-pill"><span class="pulse"></span> LIVE</span>
+          <span class="channel">Website chat</span>
+          <span class="site-name">Paragon Jiu-Jitsu</span>
+          <button class="close" aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="chat-body" id="heroChatBody"></div>
+        <div class="chat-input">
+          <input id="heroChatInput" placeholder="Type a message…" disabled />
+          <button class="send" aria-label="Send" style="background-color: rgb(186, 89, 52);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="chat-body" id="heroChatBody"></div>
-      <div class="chat-input">
-        <input id="heroChatInput" placeholder="Type a message…" disabled />
-        <button class="send" aria-label="Send" style="background-color: rgb(186, 89, 52);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </div>
+      <p class="demo-chat-note">
+        <span class="arrow">↑</span>That's a demo. To see one live, <a href="#" data-open-sunni>ask Sunni — our agent</a>.
+      </p>
     </div>
   </div>
 </section>
@@ -1218,27 +1759,123 @@
   </div>
 </section>
 
+<!-- ─────────── INDUSTRIES (who it's for — placed early to qualify the audience) ─────────── -->
+<section class="section" id="industries" data-screen-label="02 Industries">
+  <div class="wrap">
+    <div class="who-head">
+      <div>
+        <span class="eyebrow">Who it's for</span>
+        <h2>Where it fits best.</h2>
+      </div>
+      <p class="lede">Service businesses where appointments are the product, the calendar is shared, and the front desk wears five hats.</p>
+    </div>
+
+    <div class="core-grid">
+      <div class="core-card">
+        <h4>Salons &amp; Med Spas</h4>
+        <p class="desc">Studios where appointments make the day.</p>
+        <ul>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Service menu &amp; pricing answered on the spot</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Walk-in waitlists &amp; rebookings</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Consult booking &amp; pre-care reminders</li>
+        </ul>
+        <span class="sub">Salons · Barbers · Med spas · Lash &amp; brow · Nails</span>
+      </div>
+
+      <div class="core-card">
+        <h4>Gyms &amp; Martial Arts</h4>
+        <p class="desc">Studios that turn a free trial into a member.</p>
+        <ul>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Free trial bookings on your real schedule</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Class times, prices, and membership tiers</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>New-student intake routed to coaches</li>
+        </ul>
+        <span class="sub">Jiu-jitsu · CrossFit · Yoga · Pilates · Boxing</span>
+      </div>
+
+      <div class="core-card">
+        <h4>Home Services</h4>
+        <p class="desc">Trucks that should be on jobs, not the phone.</p>
+        <ul>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Quotes by home size or job scope</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Photo &amp; symptom triage before dispatch</li>
+          <li><span class="tick"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Recurring service on autopilot</li>
+        </ul>
+        <span class="sub">Cleaning · Pool · HVAC · Plumbing · Lawn</span>
+      </div>
+    </div>
+
+    <div class="also-fits">
+      <span class="also-label">Also a fit</span>
+      <ul>
+        <li>Dental &amp; ortho</li>
+        <li>Veterinary</li>
+        <li>Real estate</li>
+        <li>Restaurants</li>
+        <li>Auto repair</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── BEFORE / AFTER ─────────── -->
+<section class="ba-section" id="before-after" data-screen-label="03 Before & After">
+  <div class="wrap">
+    <div class="ba-head">
+      <div>
+        <span class="eyebrow">Before &amp; after</span>
+        <h2>What changes<br/>day-to-day.</h2>
+      </div>
+      <p class="lede">No miracles. Just a few of the inbox tasks that quietly used to eat the day, handled before anyone notices.</p>
+    </div>
+
+    <div class="ba-grid">
+      <div class="ba-col is-before">
+        <span class="ba-label">Before</span>
+        <ul>
+          <li>Missed leads after hours</li>
+          <li>Front desk answering repetitive pricing questions</li>
+          <li>Slow follow-up</li>
+          <li>Staff tied up on calls</li>
+        </ul>
+      </div>
+      <div class="ba-col is-after">
+        <span class="ba-label">After</span>
+        <ul>
+          <li>Instant replies, 24/7</li>
+          <li>FAQs handled automatically</li>
+          <li>Leads captured immediately</li>
+          <li>Staff focused on customers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ─────────── HOW IT WORKS ─────────── -->
-<section class="section" id="how" data-screen-label="02 How it works">
+<section class="section" id="how" data-screen-label="04 How it works">
   <div class="wrap how-grid">
     <div>
       <span class="eyebrow">How it works</span>
-      <h2>Powerful agents.<br/>Simple process.</h2>
+      <h2>What onboarding looks like</h2>
       <span class="italic-accent">We make automation feel easy.</span>
     </div>
     <div>
       <div class="steps">
         <div class="step">
+          <span class="week">Week 1</span>
           <div class="num" style="border-style: none;">1</div>
           <h4>We learn your workflow</h4>
           <p>A 45-minute call. We learn how you book, who answers what, and the questions you're tired of answering.</p>
         </div>
         <div class="step">
+          <span class="week">Week 2</span>
           <div class="num" style="border-style: none;">2</div>
           <h4>We build your agents</h4>
           <p>Custom agents are written, tested, and trained against your calendar, hours, and policies — not a template.</p>
         </div>
         <div class="step">
+          <span class="week">Week 3</span>
           <div class="num" style="border-style: none;">3</div>
           <h4>You get back to growth</h4>
           <p>Your agents handle the inbox. You handle the work. We tune things every week so the answers keep improving.</p>
@@ -1249,7 +1886,7 @@
 </section>
 
 <!-- ─────────── DEMO ─────────── -->
-<section class="section demo-section" id="demo" data-screen-label="03 Demo">
+<section class="section demo-section" id="demo" data-screen-label="05 Demo">
   <div class="wrap">
     <div class="demo-head">
       <div class="left">
@@ -1261,17 +1898,42 @@
 
     <div class="industry-tabs" id="industryTabs">
       <button class="ind-tab active" data-industry="salon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 7l10 10M7 17L17 7"/><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <!-- scissors -->
+          <circle cx="6" cy="6" r="3"/>
+          <circle cx="6" cy="18" r="3"/>
+          <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+          <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+          <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+        </svg>
         Salon
       </button>
-      <button class="ind-tab" data-industry="gym">Gym</button>
+      <button class="ind-tab" data-industry="gym">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <!-- dumbbell: two end weights flanking a bar -->
+          <path d="M3 10v4"/>
+          <path d="M6 7v10"/>
+          <path d="M6 12h12"/>
+          <path d="M18 7v10"/>
+          <path d="M21 10v4"/>
+        </svg>
+        Gym
+      </button>
       <button class="ind-tab" data-industry="pool">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 18c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1"/><path d="M2 13c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1"/></svg>
         Pool service
       </button>
-      <button class="ind-tab" data-industry="medspa">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L8 8h8z"/><circle cx="12" cy="15" r="6"/></svg>
-        Med spa
+      <button class="ind-tab" data-industry="cleaning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <!-- broom: vertical handle, ferrule (band), fanning bristles -->
+          <path d="M12 2v11"/>
+          <rect x="7" y="13" width="10" height="3"/>
+          <path d="M8 16l-2 6"/>
+          <path d="M11 16l-.5 6"/>
+          <path d="M13 16l.5 6"/>
+          <path d="M16 16l2 6"/>
+        </svg>
+        Cleaning
       </button>
       <button class="ind-tab" data-industry="contractor">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 20h20"/><path d="M5 20V9l7-5 7 5v11"/><path d="M10 20v-6h4v6"/></svg>
@@ -1284,92 +1946,141 @@
         <!-- populated by JS -->
       </div>
 
-      <div class="chat-card" id="demoChatCard">
-        <div class="chat-head">
-          <span class="live-pill"><span class="pulse"></span> LIVE</span>
-          <span class="channel">Website chat</span>
-          <span class="site-name" id="demoSiteName">Cedar &amp; Bloom Salon</span>
+      <div class="demo-chat-col">
+        <div class="chat-card" id="demoChatCard">
+          <div class="chat-head">
+            <span class="live-pill"><span class="pulse"></span> LIVE</span>
+            <span class="channel">Website chat</span>
+            <span class="site-name" id="demoSiteName">Cedar &amp; Bloom Salon</span>
+          </div>
+          <div class="chat-body" id="demoChatBody"></div>
+          <div class="chat-input">
+            <input id="demoChatInput" placeholder="Type a message…" disabled />
+            <button class="send" aria-label="Send">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="chat-body" id="demoChatBody"></div>
-        <div class="chat-input">
-          <input id="demoChatInput" placeholder="Type a message…" disabled />
-          <button class="send" aria-label="Send">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
-        </div>
+        <p class="demo-chat-note">
+          <span class="arrow">↑</span>That's a demo. To see one live, <a href="#" data-open-sunni>ask Sunni — our agent</a>.
+        </p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─────────── INDUSTRIES ─────────── -->
-<section class="section" id="industries" data-screen-label="04 Industries">
+<!-- ─────────── WHEN A HUMAN NEEDS TO STEP IN ─────────── -->
+<section class="section handoff-section" id="handoff" data-screen-label="06 Handoff">
   <div class="wrap">
-    <div class="who-head">
+    <div class="handoff-head">
       <div>
-        <span class="eyebrow">Who it's for</span>
-        <h2>Service businesses with too few hours.</h2>
+        <span class="eyebrow">Handoff</span>
+        <h2>When a human<br/>needs to step in.</h2>
       </div>
-      <p class="lede">If your business has a website, a calendar, and more questions than time — you're who we build agents for. Below: a few industries already running on Sunday Relay.</p>
+      <p class="lede">Some questions need a person. When the agent isn't confident, it doesn't guess — it takes a clean message and gets it to the right hands.</p>
     </div>
 
-    <div class="industry-grid">
-      <div class="ind-card">
-        <div class="heading-row"><h4>Salons &amp; Barbers</h4></div>
-        <p>Bookings, walk-in waitlists, services &amp; pricing — answered before they bounce.</p>
-        <div class="tags"><span class="tag">Booking</span><span class="tag">Pricing</span><span class="tag">Waitlist</span></div>
+    <div class="handoff-grid">
+      <div class="handoff-card">
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <span class="label">Collects contact info</span>
+        <p>Name, number or email, and a short note on what they need — so no one starts cold.</p>
       </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Dental &amp; Ortho</h4></div>
-        <p>Cleanings, insurance questions, new-patient intake forms routed to the right place.</p>
-        <div class="tags"><span class="tag">Intake</span><span class="tag">Insurance</span><span class="tag">Scheduling</span></div>
+      <div class="handoff-card">
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 14 15 20 9"/><polyline points="15 9 20 9 20 14"/></svg>
+        </div>
+        <span class="label">Routes to the right person</span>
+        <p>Pricing goes to the owner. Scheduling goes to the front desk. You decide the routing once.</p>
       </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>HVAC &amp; Plumbing</h4></div>
-        <p>Emergency triage, dispatch windows, and maintenance plan questions — at 2 AM.</p>
-        <div class="tags"><span class="tag">Triage</span><span class="tag">Dispatch</span><span class="tag">After-hours</span></div>
+      <div class="handoff-card">
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </div>
+        <span class="label">Escalates nuance</span>
+        <p>Medical questions, refunds, anything sensitive — flagged for a human, never improvised.</p>
       </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Med Spas</h4></div>
-        <p>Treatment FAQs, consult bookings, and pre-care info delivered before the visit.</p>
-        <div class="tags"><span class="tag">Consults</span><span class="tag">Pre-care</span></div>
-      </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Gyms &amp; Studios</h4></div>
-        <p>Free trials, class schedules, membership FAQs — and a real first-class booking.</p>
-        <div class="tags"><span class="tag">Trials</span><span class="tag">Memberships</span></div>
-      </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Veterinary</h4></div>
-        <p>Appointment requests, refill prescriptions, and intake — calm hands for anxious owners.</p>
-        <div class="tags"><span class="tag">Refills</span><span class="tag">Intake</span></div>
-      </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Real Estate</h4></div>
-        <p>Listing inquiries, showings, and pre-qualification screening — without ghosting leads.</p>
-        <div class="tags"><span class="tag">Showings</span><span class="tag">Screening</span></div>
-      </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Restaurants</h4></div>
-        <p>Reservations, private events, large parties, catering — answered the way you'd answer.</p>
-        <div class="tags"><span class="tag">Reservations</span><span class="tag">Catering</span></div>
-      </div>
-      <div class="ind-card">
-        <div class="heading-row"><h4>Auto Repair</h4></div>
-        <p>Estimates, parts pickups, and service status — keep the phones for the work that matters.</p>
-        <div class="tags"><span class="tag">Estimates</span><span class="tag">Status</span></div>
+      <div class="handoff-card">
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/></svg>
+        </div>
+        <span class="label">Requests follow-up</span>
+        <p>Sets the expectation (“someone will reach out by tomorrow”) and logs it so it doesn't slip.</p>
       </div>
     </div>
+
+    <p class="handoff-close">The goal isn't to replace your staff <em>— it's to protect their time.</em></p>
+  </div>
+</section>
+
+<!-- ─────────── INTEGRATIONS ─────────── -->
+<section class="section int-section" id="integrations" data-screen-label="07 Integrations">
+  <div class="wrap">
+    <div class="int-head">
+      <div>
+        <span class="eyebrow">Integrations</span>
+        <h2>Works with the tools<br/>you use.</h2>
+      </div>
+      <p class="lede">One line of script on your site. Everything else stays where it is — your calendar, your scheduler, your CRM. No migration, no overhaul.</p>
+    </div>
+
+    <div class="int-grid">
+      <div class="int-card">
+        <span class="mark" style="background:#111111;">Sq</span>
+        <div class="info">
+          <span class="name">Square Appointments</span>
+          <span class="cat">Scheduling</span>
+        </div>
+      </div>
+      <div class="int-card">
+        <span class="mark" style="background:#2D2D2D;">M</span>
+        <div class="info">
+          <span class="name">Mindbody</span>
+          <span class="cat">Fitness &amp; wellness</span>
+        </div>
+      </div>
+      <div class="int-card">
+        <span class="mark" style="background:#006BFF;">C</span>
+        <div class="info">
+          <span class="name">Calendly</span>
+          <span class="cat">Scheduling</span>
+        </div>
+      </div>
+      <div class="int-card">
+        <span class="mark" style="background:#1A73E8;">31</span>
+        <div class="info">
+          <span class="name">Google Calendar</span>
+          <span class="cat">Calendar</span>
+        </div>
+      </div>
+      <div class="int-card">
+        <span class="mark" style="background:#0E7C5C;">J</span>
+        <div class="info">
+          <span class="name">Jobber</span>
+          <span class="cat">Field service</span>
+        </div>
+      </div>
+      <div class="int-card">
+        <span class="mark" style="background:#E04F2A;">H</span>
+        <div class="info">
+          <span class="name">Housecall Pro</span>
+          <span class="cat">Field service</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="int-foot">Don't see yours? <strong>We've built integrations in about a week.</strong> If your stack has an API, we can probably talk to it.</p>
   </div>
 </section>
 
 <!-- ─────────── PRICING / WHAT IT COSTS ─────────── -->
-<section class="section cost-section" id="pricing" data-screen-label="05 Pricing">
+<section class="section cost-section" id="pricing" data-screen-label="08 Pricing">
   <div class="wrap cost-grid">
     <div class="cost-head">
       <span class="eyebrow">What it costs</span>
       <h2>Custom pricing,<br/>sent in writing.</h2>
-      <span class="italic-accent">No usage surprises. No per-message charges.</span>
       <p class="lede">Every build is scoped to your business — number of agents, systems we connect to, expected volume. We send a flat quote after the discovery call, so you know what you're paying before you sign anything.</p>
     </div>
     <div class="cost-body">
@@ -1391,11 +2102,13 @@
         </div>
       </div>
     </div>
+
+    <p class="cost-close">No usage surprises <em>— no per-message charges.</em></p>
   </div>
 </section>
 
 <!-- ─────────── FAQ ─────────── -->
-<section class="section faq-section" id="faq" data-screen-label="06 FAQ">
+<section class="section faq-section" id="faq" data-screen-label="09 FAQ">
   <div class="wrap faq-grid">
     <div>
       <span class="eyebrow">Questions</span>
@@ -1414,15 +2127,20 @@
 <section class="cta-band">
   <div class="wrap">
     <div class="cta-card">
-      <div>
-        <span class="eyebrow">Ready when you are</span>
-        <h2>Let's see what your agent could do.</h2>
-        <span class="italic-accent">A 30-minute demo. No slides, no pressure.</span>
-      </div>
+      <span class="eyebrow">Ready when you are</span>
+      <h2>Let's see what<br/><em>your agent</em><br/>could do.</h2>
+      <p class="cta-sub">A 30-minute call. Real questions about your business.</p>
       <div class="actions">
-        <a href="#" class="btn btn-primary">Book a demo</a>
+        <a href="#" class="btn btn-primary">Book a consult</a>
         <a href="#" class="btn btn-secondary" style="border-color: rgb(25, 65, 82); color: rgb(25, 65, 82)" data-open-sunni>Chat with Sunni</a>
       </div>
+      <p class="cta-meta">
+        <span>Live in three weeks</span>
+        <span class="dot"></span>
+        <span>Cancel any month</span>
+        <span class="dot"></span>
+        <span>No usage charges</span>
+      </p>
     </div>
   </div>
 </section>
@@ -1432,7 +2150,7 @@
   <div class="wrap footer-grid">
     <div class="brand-block">
       <a href="#" class="brand">SUNDAY <span class="accent" style="color: rgb(255, 255, 255);">RELAY</span></a>
-      <p>AI agents for service businesses. Built in Austin, deployed on your own domain.</p>
+      <p>AI agents for small businesses. Built in Austin, deployed on your own domain.</p>
     </div>
     <div>
       <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 700; font-size: 14px;">Product</h5>
@@ -1440,23 +2158,15 @@
         <li><a href="#how">How it works</a></li>
         <li><a href="#demo">Live demo</a></li>
         <li><a href="#industries">Industries</a></li>
+        <li><a href="#integrations">Integrations</a></li>
         <li><a href="#pricing">Pricing</a></li>
-      </ul>
-    </div>
-    <div>
-      <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 14px;">Company</h5>
-      <ul>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Customers</a></li>
-        <li><a href="#">Journal</a></li>
-        <li><a href="#">Careers</a></li>
       </ul>
     </div>
     <div>
       <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 14px;">Talk to us</h5>
       <ul>
         <li><a href="/cdn-cgi/l/email-protection#2b434e526b585e454f4a52594e474a5205484446"><span class="__cf_email__" data-cfemail="18707d61586b6d767c79616a7d747961367b7775">[email&#160;protected]</span></a></li>
-        <li><a href="#">Book a demo</a></li>
+        <li><a href="#">Book a consult</a></li>
         <li><a href="#" data-open-sunni>Chat with Sunni</a></li>
       </ul>
     </div>
@@ -1475,7 +2185,7 @@
   <div class="sunni-head">
     <div class="who">
       <span class="name" id="sunniName">Sunni</span>
-      <span class="role">Sunday Relay's agent · always on</span>
+      <span class="role">Sunday Relay's own agent · always on</span>
     </div>
     <span class="live-pill"><span class="pulse"></span> LIVE</span>
     <button class="close" id="sunniClose" aria-label="Close chat">
@@ -1810,19 +2520,15 @@ const INDUSTRIES = {
       "Knows your stylists' specialties"
     ],
     messages: [
-      { who: "agent", text: "Hey — welcome to Cedar & Bloom. What can I help you book?", time: "2:14 PM" },
-      { who: "user",  text: "Do you do balayage on dark hair? Roughly what would it run?", time: "2:14 PM" },
-      { who: "agent", text: "Yes — most of our stylists do. On medium-dark hair, balayage starts at $245 and runs 3–4 hours. Want me to find you a slot?", time: "2:15 PM" },
-      { who: "user",  text: "Saturday afternoon if anyone's open", time: "2:15 PM" },
-      { who: "agent", text: "Marisol has 1:30 PM open this Saturday — she specializes in lived-in color. Want me to hold it for you?", time: "2:16 PM" },
-      { who: "user",  text: "Yes please", time: "2:16 PM" },
-      { who: "agent", text: "Great. What name should I put it under?", time: "2:16 PM" },
-      { who: "user",  text: "Maya Chen", time: "2:17 PM" },
-      { who: "agent", text: "Thanks Maya. Would you prefer the confirmation by text or email?", time: "2:17 PM" },
-      { who: "user",  text: "Email", time: "2:17 PM" },
-      { who: "agent", text: "Got it — what email should I send it to?", time: "2:17 PM" },
-      { who: "user",  text: "maya.chen@gmail.com", time: "2:18 PM" },
-      { who: "agent", text: "Held under your name. Confirmation on the way.", time: "2:18 PM",
+      { who: "agent", text: "Hey — welcome to Cedar & Bloom. What can I help with?", time: "2:14 PM" },
+      { who: "user",  text: "do you guys do balayage on dark hair? how much usually", time: "2:14 PM" },
+      { who: "agent", text: "Yep — most of our stylists do it. On dark hair it starts at $245, takes about 3–4 hrs.", time: "2:15 PM" },
+      { who: "user",  text: "ok cool. anyone open sat?", time: "2:15 PM" },
+      { who: "agent", text: "Marisol has 1:30 PM Saturday. She's great with lived-in color. Want it?", time: "2:15 PM" },
+      { who: "user",  text: "yes pls", time: "2:16 PM" },
+      { who: "agent", text: "Name + email for the confirmation?", time: "2:16 PM" },
+      { who: "user",  text: "maya chen, maya.chen@gmail.com", time: "2:17 PM" },
+      { who: "agent", text: "You're in. Confirmation on the way.", time: "2:17 PM",
         booked: { pill: "Held", line: "Sat · 1:30 PM · Marisol · Maya Chen" } }
     ]
   },
@@ -1837,20 +2543,41 @@ const INDUSTRIES = {
       "Routes injury & medical questions to staff"
     ],
     messages: [
-      { who: "agent", text: "Hey — welcome to Paragon. Ask about classes, schedules, or your first free trial.", time: "10:42 AM" },
-      { who: "user",  text: "I'm totally new. Is there a beginner class this week?", time: "10:42 AM" },
-      { who: "agent", text: "Yes. Fundamentals runs Tue and Thu at 6:45 PM, and Sat at 10 AM. Your first week is free.", time: "10:43 AM" },
-      { who: "user",  text: "Thursday works", time: "10:43 AM" },
-      { who: "agent", text: "Want me to book your first class for Thursday at 6:45?", time: "10:43 AM" },
-      { who: "user",  text: "Yes please", time: "10:44 AM" },
-      { who: "agent", text: "Great. What name should I put it under?", time: "10:44 AM" },
-      { who: "user",  text: "Alex Rivera", time: "10:44 AM" },
-      { who: "agent", text: "Thanks Alex. Would you prefer the confirmation by text or email?", time: "10:44 AM" },
-      { who: "user",  text: "Text works", time: "10:45 AM" },
-      { who: "agent", text: "Got it — what's the best number?", time: "10:45 AM" },
-      { who: "user",  text: "(512) 555-0188", time: "10:45 AM" },
-      { who: "agent", text: "Booked. Wear loose clothes — we'll loan you a gi. Text confirmation on its way.", time: "10:46 AM",
+      { who: "agent", text: "Hey — welcome to Paragon. Looking for a class or a free trial?", time: "10:42 AM" },
+      { who: "user",  text: "totally new, any beginner classes this week?", time: "10:42 AM" },
+      { who: "agent", text: "Yeah — Fundamentals runs Tue/Thu 6:45 PM and Sat 10 AM. First week's free.", time: "10:43 AM" },
+      { who: "user",  text: "thurs works", time: "10:43 AM" },
+      { who: "agent", text: "Book you in for Thursday 6:45?", time: "10:43 AM" },
+      { who: "user",  text: "yes pls", time: "10:44 AM" },
+      { who: "agent", text: "Name + number for the text confirm?", time: "10:44 AM" },
+      { who: "user",  text: "alex rivera, (512) 555-0188", time: "10:45 AM" },
+      { who: "agent", text: "All set. Wear loose clothes — we'll loan you a gi.", time: "10:45 AM",
         booked: { pill: "Booked", line: "Thu · 6:45 PM · Fundamentals · Alex Rivera" } }
+    ]
+  },
+  cleaning: {
+    site: "Bright & Tidy Cleaning Co.",
+    label: "Bright & Tidy",
+    headline: "Quotes, schedules, and rebooks.",
+    blurb: "Cleaning agents answer pricing-by-size questions, hold time windows, and put recurring cleans on the calendar without back-and-forth.",
+    bullets: [
+      "Quotes by home size & cadence",
+      "Books one-time or recurring cleans",
+      "Routes special-request jobs to the owner"
+    ],
+    messages: [
+      { who: "agent", text: "Hi — Bright & Tidy here. What can I help with?", time: "9:18 AM" },
+      { who: "user",  text: "do you do biweekly cleans for a 2 bed?", time: "9:18 AM" },
+      { who: "agent", text: "We do. A 2bd/2ba biweekly usually runs $135–160. About 2 hours.", time: "9:19 AM" },
+      { who: "user",  text: "ok cool. anything next thursday?", time: "9:19 AM" },
+      { who: "agent", text: "Thursday I have 9 AM or 1 PM open. Which works better?", time: "9:20 AM" },
+      { who: "user",  text: "9 if possible", time: "9:20 AM" },
+      { who: "agent", text: "Got it. Zip + a name for the booking?", time: "9:20 AM" },
+      { who: "user",  text: "78745, jess kim", time: "9:21 AM" },
+      { who: "agent", text: "And a number for the day-of text?", time: "9:21 AM" },
+      { who: "user",  text: "(512) 555-0344", time: "9:21 AM" },
+      { who: "agent", text: "You're booked. We'll text the morning of.", time: "9:22 AM",
+        booked: { pill: "Booked", line: "Thu · 9:00 AM · Biweekly clean · Jess Kim" } }
     ]
   },
   pool: {
@@ -1864,47 +2591,16 @@ const INDUSTRIES = {
       "Quotes recurring plans without the hard sell"
     ],
     messages: [
-      { who: "agent", text: "Hey — Hill Country Pool here. What's going on with your pool?", time: "7:08 AM" },
-      { who: "user",  text: "Water turned green overnight. Filter sounds normal.", time: "7:08 AM" },
-      { who: "agent", text: "Sounds like an algae bloom — common this week with the heat. Can you send a photo and your zip? I can dispatch a tech if you're inside our area.", time: "7:09 AM" },
-      { who: "user",  text: "78704. Photo attached.", time: "7:09 AM" },
-      { who: "agent", text: "You're in our area. Want me to hold a same-day 2–4 PM window? $89 trip + chemicals.", time: "7:10 AM" },
-      { who: "user",  text: "Yes please", time: "7:10 AM" },
-      { who: "agent", text: "What name should I put the service call under?", time: "7:10 AM" },
-      { who: "user",  text: "Jordan Mills", time: "7:11 AM" },
-      { who: "agent", text: "Thanks Jordan. Would you prefer the confirmation by text or email?", time: "7:11 AM" },
-      { who: "user",  text: "Text — easier on the go", time: "7:11 AM" },
-      { who: "agent", text: "Makes sense. What's the best number?", time: "7:11 AM" },
-      { who: "user",  text: "(512) 555-0263", time: "7:12 AM" },
-      { who: "agent", text: "Scheduled. Your tech will text 20 minutes before arrival.", time: "7:12 AM",
+      { who: "agent", text: "Hi — Hill Country Pool. What's going on?", time: "7:08 AM" },
+      { who: "user",  text: "pool turned green overnight. filter sounds normal tho", time: "7:08 AM" },
+      { who: "agent", text: "Sounds like algae — common in this heat. Zip + a photo if you can?", time: "7:09 AM" },
+      { who: "user",  text: "78704, photo attached", time: "7:09 AM" },
+      { who: "agent", text: "You're in our area. I can hold 2–4 PM today — $89 trip + chemicals.", time: "7:10 AM" },
+      { who: "user",  text: "ok do it", time: "7:10 AM" },
+      { who: "agent", text: "Name + best number?", time: "7:10 AM" },
+      { who: "user",  text: "jordan mills, (512) 555-0263", time: "7:11 AM" },
+      { who: "agent", text: "Scheduled. Tech will text 20 min before they get there.", time: "7:11 AM",
         booked: { pill: "Scheduled", line: "Today · 2–4 PM · Same-day service · Jordan Mills" } }
-    ]
-  },
-  medspa: {
-    site: "North Loop Aesthetics",
-    label: "North Loop",
-    headline: "Books consults, sends pre-care.",
-    blurb: "Med spa agents walk visitors through treatments, qualify candidacy, and book consults — then deliver pre-care info on the right cadence.",
-    bullets: [
-      "Treatment FAQs in your provider's voice",
-      "Books consults; refers urgent care elsewhere",
-      "Sends pre-care 72/24 hours before the visit"
-    ],
-    messages: [
-      { who: "agent", text: "Welcome to North Loop. Looking to learn about a treatment or book a consult?", time: "11:20 AM" },
-      { who: "user",  text: "How long does a lip filler appointment usually take?", time: "11:21 AM" },
-      { who: "agent", text: "About 45 minutes, including numbing. Most clients head straight back to work. First-timers do a 20-minute consult with our injector — usually same week.", time: "11:21 AM" },
-      { who: "user",  text: "Can I do the consult Friday morning?", time: "11:22 AM" },
-      { who: "agent", text: "Dr. Park has 9:30 AM open Friday. Want me to hold it for you?", time: "11:22 AM" },
-      { who: "user",  text: "Yes please", time: "11:23 AM" },
-      { who: "agent", text: "Great. What name should I put the consult under?", time: "11:23 AM" },
-      { who: "user",  text: "Sara Patel", time: "11:23 AM" },
-      { who: "agent", text: "Thanks Sara. Would you prefer the confirmation by text or email?", time: "11:23 AM" },
-      { who: "user",  text: "Email please", time: "11:24 AM" },
-      { who: "agent", text: "Sounds good — what email should I send it to?", time: "11:24 AM" },
-      { who: "user",  text: "sara.patel@gmail.com", time: "11:24 AM" },
-      { who: "agent", text: "Held. Pre-care notes will go out the day before.", time: "11:25 AM",
-        booked: { pill: "Held", line: "Fri · 9:30 AM · Consult · Sara Patel" } }
     ]
   },
   contractor: {
@@ -1918,19 +2614,15 @@ const INDUSTRIES = {
       "Pings your phone for emergency repairs"
     ],
     messages: [
-      { who: "agent", text: "Hi — Mesa Build. What kind of project are you thinking about?", time: "8:55 AM" },
-      { who: "user",  text: "Full kitchen remodel. Mid-range, hoping to start late summer.", time: "8:55 AM" },
-      { who: "agent", text: "Great fit for us. Couple quick ones: what's your zip, and is it a single-wall or full layout change?", time: "8:56 AM" },
-      { who: "user",  text: "78704. Full layout — moving the island.", time: "8:56 AM" },
-      { who: "agent", text: "Sam handles full kitchen redesigns in your area. He's free for an on-site estimate next Wed at 4 PM. Want me to hold it?", time: "8:57 AM" },
-      { who: "user",  text: "Yes please", time: "8:57 AM" },
-      { who: "agent", text: "What name should I put the estimate under?", time: "8:57 AM" },
-      { who: "user",  text: "Devon Brooks", time: "8:58 AM" },
-      { who: "agent", text: "Thanks Devon. Would you prefer the confirmation by text or email?", time: "8:58 AM" },
-      { who: "user",  text: "Text is fine", time: "8:58 AM" },
-      { who: "agent", text: "Great — what's the best number for Sam to reach you at?", time: "8:58 AM" },
-      { who: "user",  text: "(512) 555-0421", time: "8:59 AM" },
-      { who: "agent", text: "Held. Sam will text you to confirm the address.", time: "8:59 AM",
+      { who: "agent", text: "Hi — Mesa Build. What kind of project?", time: "8:55 AM" },
+      { who: "user",  text: "full kitchen remodel, hoping for a late summer start", time: "8:55 AM" },
+      { who: "agent", text: "Good fit. Zip + are you moving anything (island, walls)?", time: "8:56 AM" },
+      { who: "user",  text: "78704, moving the island", time: "8:56 AM" },
+      { who: "agent", text: "Sam does those in your area. He's open Wed 4 PM for an on-site. Want it?", time: "8:57 AM" },
+      { who: "user",  text: "yes pls", time: "8:57 AM" },
+      { who: "agent", text: "Name + number for the day-of?", time: "8:57 AM" },
+      { who: "user",  text: "devon brooks, (512) 555-0421", time: "8:58 AM" },
+      { who: "agent", text: "Held. Sam will text to confirm the address.", time: "8:58 AM",
         booked: { pill: "Held", line: "Wed · 4:00 PM · On-site estimate · Devon Brooks" } }
     ]
   }
