@@ -1838,6 +1838,89 @@ FAQS.forEach((f, i) => {
 });
 </script>
 
+<!-- ─────────── Tweaks ─────────── -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const SR_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "palette": [
+    "#BA5934",
+    "#194152",
+    "#AEC7D0"
+  ],
+  "headlineSize": 80,
+  "denseFeatures": false,
+  "headerStyle": "bold"
+}/*EDITMODE-END*/;
+
+const PALETTES = [
+  ["#BA5934", "#194152", "#AEC7D0"], // default — terracotta / navy / blue
+  ["#C59A3D", "#194152", "#AEC7D0"], // mustard accent
+  ["#2D6A4F", "#194152", "#AEC7D0"], // forest
+  ["#7A3B2E", "#1E3A47", "#C7D6DA"]  // deeper editorial
+];
+
+function SunnyTweaks() {
+  const [t, setTweak] = useTweaks(SR_TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    const r = document.documentElement;
+    r.style.setProperty("--terracotta", t.palette[0]);
+    r.style.setProperty("--navy",      t.palette[1]);
+    r.style.setProperty("--blue",      t.palette[2]);
+
+    document.querySelectorAll("h1").forEach(h => {
+      h.style.fontSize = t.headlineSize + "px";
+    });
+
+    const grid = document.querySelector(".features-grid");
+    if (grid) grid.style.padding = (t.denseFeatures ? 36 : 56) + "px 0";
+
+    document.querySelectorAll("h1, h2").forEach(h => {
+      h.style.fontWeight = t.headerStyle === "bold" ? 700 : 600;
+    });
+  }, [t]);
+
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection title="Palette">
+        <TweakColor
+          label="Accent stack"
+          value={t.palette}
+          onChange={v => setTweak("palette", v)}
+          options={PALETTES}
+        />
+      </TweakSection>
+      <TweakSection title="Type">
+        <TweakSlider
+          label="Headline size"
+          value={t.headlineSize}
+          onChange={v => setTweak("headlineSize", v)}
+          min={48} max={96} step={2} suffix="px"
+        />
+        <TweakRadio
+          label="Header weight"
+          value={t.headerStyle}
+          onChange={v => setTweak("headerStyle", v)}
+          options={[
+            { value: "semi", label: "Semibold" },
+            { value: "bold", label: "Bold" }
+          ]}
+        />
+      </TweakSection>
+      <TweakSection title="Layout">
+        <TweakToggle
+          label="Dense features strip"
+          value={t.denseFeatures}
+          onChange={v => setTweak("denseFeatures", v)}
+        />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
 ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<SunnyTweaks />);
 </script>
 
