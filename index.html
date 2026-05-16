@@ -1572,18 +1572,30 @@ function createChatPlayer(body, input) {
     if (e.key === "Escape" && isOpen) close();
   });
 
-  // Handle send (placeholder — real agent script will replace this)
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = "";
-    addMessage("user", text);
-    const t = addTyping();
-    await sleep(1100);
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  addMessage("user", text);
+  const t = addTyping();
+  try {
+    const res = await fetch("https://sunday-relay-production.up.railway.app/chat/sunday-relay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: text,
+        sessionId: SESSION_ID
+      })
+    });
+    const data = await res.json();
     t.remove();
-    addMessage("agent", PLACEHOLDER_REPLY);
-  });
+    addMessage("agent", data.response);
+  } catch (err) {
+    t.remove();
+    addMessage("agent", "Something went wrong — try emailing hey@sundayrelay.com directly.");
+  }
+});
 })();
 
 /* ─────────── Demo / industry transcripts ─────────── */
@@ -1836,9 +1848,6 @@ FAQS.forEach((f, i) => {
     requestAnimationFrame(() => { ans.style.maxHeight = ans.scrollHeight + "px"; });
   }
 });
-</script>
-
-ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<SunnyTweaks />);
 </script>
 
 </body>
