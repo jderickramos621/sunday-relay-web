@@ -950,7 +950,7 @@
   .hidden { display: none !important; }
 
   /* hide injected mention attribute side effects */
-  [data-screen-label] { display: contents; }
+  [data-screen-label] { /* nothing */ }
 </style>
 </head>
 <body data-screen-label="Sunday Relay Landing">
@@ -1581,7 +1581,10 @@ function createChatPlayer(body, input) {
   addMessage("user", text);
   const t = addTyping();
   try {
-    const res = await fetch("https://sunday-relay-production.up.railway.app/chat/sunday-relay", {
+    const API_URL = window.location.hostname === 'localhost'
+      ? 'http://localhost:4000'
+      : 'https://sunday-relay-production.up.railway.app';
+    const res = await fetch(`${API_URL}/chat/sunday-relay`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
