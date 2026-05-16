@@ -1,0 +1,1610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sunday Relay — AI agents for real businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #194152;
+    --terracotta: #BA5934;
+    --bg: #F3F4F3;
+    --bg-alt: #ECEEED;
+    --blue: #AEC7D0;
+    --blue-soft: #D8E3E7;
+    --text: #2A2A2A;
+    --mustard: #C59A3D;
+    --border: #DDDFDC;
+    --border-strong: #C9CCC8;
+    --muted: #6B6E6A;
+
+    --serif-italic: "Playfair Display", Georgia, serif;
+    --display: "Barlow Semi Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  ::selection { background: var(--blue); color: var(--navy); }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; }
+
+  /* ─────────── Layout ─────────── */
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  @media (max-width: 720px) { .wrap { padding: 0 22px; } }
+
+  /* ─────────── Typography ─────────── */
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .eyebrow-muted { color: var(--muted); }
+
+  h1, h2, h3, h4 {
+    font-family: var(--display);
+    color: var(--navy);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  h1 { font-size: clamp(44px, 6vw, 76px); }
+  h2 { font-size: clamp(34px, 4.2vw, 54px); }
+  h3 { font-size: 22px; line-height: 1.15; letter-spacing: 0; }
+  h4 { font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--sans); font-weight: 600; }
+
+  p { margin: 0; }
+  .lede { font-size: 17px; line-height: 1.6; color: var(--text); }
+  .small { font-size: 13.5px; color: var(--muted); }
+
+  .italic-accent {
+    font-family: var(--serif-italic);
+    font-style: italic;
+    color: var(--navy);
+    opacity: 0.85;
+    font-size: 20px;
+  }
+
+  /* ─────────── Buttons ─────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 9px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--terracotta);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #A24E2C; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--navy);
+    border-color: var(--border-strong);
+  }
+  .btn-secondary:hover { border-color: var(--navy); }
+  .btn-sm { height: 38px; padding: 0 16px; font-size: 13.5px; border-radius: 8px; }
+
+  /* ─────────── Header ─────────── */
+  header.site {
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(1.4);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+  .brand {
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: 17px;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .brand .mark {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 32%, var(--mustard) 0 36%, var(--terracotta) 37% 100%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+  }
+  .brand .accent { color: var(--terracotta); }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .nav-links a { position: relative; padding: 6px 0; }
+  .nav-links a:hover { color: var(--terracotta); }
+  @media (max-width: 880px) { .nav-links { display: none; } }
+
+  /* ─────────── Hero ─────────── */
+  .hero {
+    padding: 72px 0 96px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; gap: 56px; } }
+
+  .hero h1 { margin-top: 14px; }
+  .hero .lede { margin-top: 22px; max-width: 460px; }
+  .hero .cta-row { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+  .hero .trust {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 38px;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+  .hero .trust .dot { width: 6px; height: 6px; border-radius: 50%; background: #4F9D6A; box-shadow: 0 0 0 4px rgba(79,157,106,0.15); }
+
+  /* ─────────── Chat surface ─────────── */
+  .chat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(25,65,82,0.04), 0 12px 40px -28px rgba(25,65,82,0.35);
+  }
+  .chat-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: #FBFBFA;
+  }
+  .live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--mustard);
+    letter-spacing: 0.12em;
+  }
+  .live-pill .pulse {
+    width: 7px; height: 7px;
+    background: var(--mustard);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(197,154,61,0.55);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(197,154,61,0.55); }
+    70%  { box-shadow: 0 0 0 9px rgba(197,154,61,0); }
+    100% { box-shadow: 0 0 0 0 rgba(197,154,61,0); }
+  }
+  .chat-head .channel {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .chat-head .site-name {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .chat-head .close {
+    width: 22px; height: 22px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    color: var(--muted);
+    background: #fff;
+  }
+  .chat-body {
+    padding: 22px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 380px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    background:
+      linear-gradient(#fff, #fff),
+      repeating-linear-gradient(0deg, var(--border) 0 1px, transparent 1px 24px);
+    background-blend-mode: normal;
+  }
+  .chat-body::-webkit-scrollbar { width: 6px; }
+  .chat-body::-webkit-scrollbar-thumb { background: #DDDFDC; border-radius: 3px; }
+  .msg {
+    max-width: 78%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    animation: msgIn 0.32s ease both;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg .label {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    opacity: 0.7;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .msg.agent {
+    background: var(--navy);
+    color: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .msg.agent .label { color: rgba(255,255,255,0.6); }
+  .msg.user {
+    background: #EEF0EE;
+    color: var(--text);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .msg.user .label { color: var(--muted); }
+  .msg .time {
+    display: block;
+    font-size: 10.5px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+  }
+  .msg.agent .time { color: rgba(255,255,255,0.55); }
+  .msg .booked {
+    margin-top: 10px;
+    padding: 9px 11px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 7px;
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .msg .booked .pill {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    background: var(--mustard); color: #1B1B1B;
+    padding: 3px 6px; border-radius: 4px; font-weight: 700;
+  }
+  .typing {
+    align-self: flex-start;
+    background: var(--navy);
+    padding: 12px 14px;
+    border-radius: 10px;
+    border-bottom-left-radius: 3px;
+    display: inline-flex; gap: 4px;
+  }
+  .typing span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.7);
+    animation: bounce 1.1s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  .chat-input {
+    border-top: 1px solid var(--border);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FBFBFA;
+  }
+  .chat-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-size: 13.5px;
+    color: var(--text);
+    outline: none;
+  }
+  .chat-input input::placeholder { color: #9C9F9A; }
+  .chat-input .send {
+    width: 32px; height: 32px;
+    border-radius: 7px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    display: grid; place-items: center;
+  }
+
+  /* ─────────── Features strip ─────────── */
+  .features {
+    background: var(--blue);
+    border-top: 1px solid #99B7C2;
+    border-bottom: 1px solid #99B7C2;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    padding: 56px 0;
+  }
+  @media (max-width: 880px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  .feature {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .feature .icon {
+    width: 56px; height: 56px;
+    border: 1px solid var(--navy);
+    border-radius: 50%;
+    color: var(--navy);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    background: transparent;
+  }
+  .feature h4 { color: var(--navy); }
+  .feature p { font-size: 13.5px; color: #2D4F5A; margin-top: 6px; line-height: 1.5; }
+
+  /* ─────────── How it works ─────────── */
+  .section { padding: 96px 0; }
+  .how-grid {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: start;
+  }
+  @media (max-width: 880px) { .how-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .how-grid h2 { margin-top: 12px; }
+  .how-grid .italic-accent { margin-top: 14px; display: block; }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: start;
+    position: relative;
+  }
+  .step .num {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    color: var(--navy);
+    border: 1px solid #B3CBD3;
+    display: grid; place-items: center;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    position: relative;
+    z-index: 2;
+  }
+  .step h4 {
+    font-family: var(--display);
+    font-size: 19px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--navy);
+    margin-top: 22px;
+    font-weight: 600;
+  }
+  .step p { margin-top: 8px; font-size: 14px; line-height: 1.55; color: var(--text); max-width: 230px; }
+
+  .step-row { position: relative; display: flex; align-items: center; }
+  .step-row .connector {
+    flex: 1;
+    height: 1px;
+    border-top: 1.5px dashed #B3CBD3;
+    margin: 0 -4px;
+  }
+
+  /* ─────────── Demo section ─────────── */
+  .demo-section { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .demo-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
+  .demo-head .left h2 { margin-top: 12px; }
+  .demo-head .meta { font-size: 13px; color: var(--muted); max-width: 320px; }
+
+  .industry-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 36px 0 28px;
+    flex-wrap: wrap;
+  }
+  .ind-tab {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--navy);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .ind-tab:hover { border-color: var(--navy); }
+  .ind-tab.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+  .ind-tab svg { width: 16px; height: 16px; }
+
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (max-width: 980px) { .demo-grid { grid-template-columns: 1fr; } }
+
+  .demo-side {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 28px 28px 26px;
+  }
+  .demo-side .label { font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terracotta); font-weight: 600; }
+  .demo-side h3 { font-family: var(--display); font-size: 28px; letter-spacing: -0.01em; color: var(--navy); margin-top: 8px; text-transform: none; }
+  .demo-side .blurb { font-size: 14.5px; line-height: 1.6; margin-top: 14px; color: var(--text); }
+  .demo-side ul { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-direction: column; gap: 12px; }
+  .demo-side li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); }
+  .demo-side li .tick {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .demo-side .stat {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .demo-side .stat .big {
+    font-family: var(--display);
+    color: var(--navy);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .demo-side .stat .desc { font-size: 12px; color: var(--muted); line-height: 1.4; max-width: 170px; }
+
+  /* ─────────── Industries grid ─────────── */
+  .industry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+  }
+  @media (max-width: 880px) { .industry-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .industry-grid { grid-template-columns: 1fr; } }
+  .ind-card {
+    padding: 28px 28px 32px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ind-card:hover { background: #FAFBFA; }
+  .ind-card .heading-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .ind-card h4 { font-family: var(--display); font-size: 19px; letter-spacing: 0; text-transform: none; color: var(--navy); font-weight: 600; }
+  .ind-card .num { font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+  .ind-card p { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+  .ind-card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .ind-card .tag {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    color: var(--muted);
+    background: transparent;
+  }
+
+  .who-head {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: end;
+  }
+  @media (max-width: 880px) { .who-head { grid-template-columns: 1fr; gap: 24px; } }
+  .who-head .lede { max-width: 540px; }
+
+  /* ─────────── Pricing strip ─────────── */
+  .cost-section {
+    background: var(--blue);
+    border-top: 1px solid #99B7C2;
+    border-bottom: 1px solid #99B7C2;
+    padding: 88px 0;
+  }
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 72px;
+    align-items: start;
+  }
+  @media (max-width: 880px) { .cost-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .cost-head h2 { margin-top: 12px; }
+  .cost-head .italic-accent { display: block; margin-top: 14px; }
+  .cost-head .lede { margin-top: 18px; max-width: 460px; color: #1F3B47; }
+  .cost-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid rgba(25, 65, 82, 0.22);
+    border-bottom: 1px solid rgba(25, 65, 82, 0.22);
+  }
+  @media (max-width: 720px) { .cost-facts { grid-template-columns: 1fr; } }
+  .cost-fact {
+    padding: 26px 24px 26px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-right: 1px solid rgba(25, 65, 82, 0.13);
+  }
+  .cost-fact:not(:first-child) { padding-left: 24px; }
+  .cost-fact:last-child { border-right: none; padding-right: 0; }
+  @media (max-width: 720px) {
+    .cost-fact { border-right: none; border-bottom: 1px solid rgba(25, 65, 82, 0.13); padding: 22px 0; }
+    .cost-fact:last-child { border-bottom: none; }
+    .cost-fact:not(:first-child) { padding-left: 0; }
+  }
+  .cost-label {
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+  }
+  .cost-value {
+    font-family: var(--display);
+    font-size: 26px;
+    color: var(--navy);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.15;
+  }
+  .cost-value .placeholder {
+    display: inline-block;
+    border-bottom: 1.5px dashed rgba(25, 65, 82, 0.4);
+    color: #2D4F5A;
+    padding: 0 4px;
+    font-weight: 500;
+  }
+  .cost-meta {
+    font-size: 13px;
+    color: #2D4F5A;
+    line-height: 1.5;
+  }
+  .cost-note {
+    margin-top: 22px;
+    font-size: 12px;
+    color: #2D4F5A;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+
+  /* ─────────── FAQ ─────────── */
+  .faq-section { background: var(--bg-alt); border-top: 1px solid var(--border); }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 64px;
+    align-items: start;
+  }
+  @media (max-width: 880px) { .faq-grid { grid-template-columns: 1fr; gap: 30px; } }
+
+  .faq-list { border-top: 1px solid var(--border-strong); }
+  .faq-item { border-bottom: 1px solid var(--border-strong); }
+  .faq-q {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--display);
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.005em;
+  }
+  .faq-q .plus {
+    width: 22px;
+    height: 22px;
+    display: grid; place-items: center;
+    color: var(--navy);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 400;
+    flex-shrink: 0;
+    transition: color 0.18s ease;
+  }
+  .faq-item.open .faq-q .plus { color: var(--terracotta); }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.32s ease;
+  }
+  .faq-a-inner { padding: 0 0 26px; max-width: 640px; color: var(--text); font-size: 14.5px; line-height: 1.65; }
+
+  .help-email { color: var(--terracotta); font-weight: 500; border-bottom: 1px solid currentColor; }
+
+  /* ─────────── CTA band ─────────── */
+  .cta-band { background: var(--bg); padding: 88px 0; border-top: 1px solid var(--border); }
+  .cta-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 56px 56px 52px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (max-width: 880px) { .cta-card { grid-template-columns: 1fr; padding: 40px; } }
+  .cta-card h2 { font-size: clamp(32px, 3.6vw, 44px); }
+  .cta-card .italic-accent { margin-top: 14px; display: block; font-size: 18px; }
+  .cta-card .actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+  @media (max-width: 880px) { .cta-card .actions { justify-content: flex-start; } }
+  .cta-card::after { content: none; }
+  .cta-card::before { content: none; }
+
+  /* ─────────── Footer ─────────── */
+  footer.site {
+    background: var(--navy);
+    color: #DCE5E9;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding: 72px 0 36px;
+  }
+  @media (max-width: 880px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  footer.site h5 {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+  footer.site ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+  footer.site ul a { color: rgba(255,255,255,0.86); }
+  footer.site ul a:hover { color: var(--mustard); }
+  footer.site .brand-block .brand { color: #fff; }
+  footer.site .brand-block p { color: rgba(255,255,255,0.7); font-size: 13.5px; line-height: 1.6; max-width: 320px; margin-top: 14px; }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding: 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-bottom .austin { display: inline-flex; align-items: center; gap: 6px; }
+  .footer-bottom .austin .star { color: var(--mustard); }
+
+  /* tiny utility */
+  .row { display: flex; align-items: center; }
+  .hidden { display: none !important; }
+
+  /* hide injected mention attribute side effects */
+  [data-screen-label] { /* nothing */ }
+</style>
+</head>
+<body data-screen-label="Sunday Relay Landing">
+
+<!-- ─────────── HEADER ─────────── -->
+<header class="site">
+  <div class="wrap nav">
+    <a href="#" class="brand" style="font-size: 24px;">SUNDAY <span class="accent">RELAY</span></a>
+    <nav class="nav-links">
+      <a href="#how" style="font-family: &#39;Barlow Semi Condensed&#39;; font-weight: 500; font-size: 16px">How it works</a>
+      <a href="#demo" style="font-family: &#39;Barlow Semi Condensed&#39;; font-weight: 500; font-size: 16px">Demo</a>
+      <a href="#industries" style="font-family: &#39;Barlow Semi Condensed&#39;; font-weight: 500; font-size: 16px">Industries</a>
+      <a href="#pricing" style="font-family: &#39;Barlow Semi Condensed&#39;; font-weight: 500; font-size: 16px">Pricing</a>
+      <a href="#faq" style="font-family: &#39;Barlow Semi Condensed&#39;; font-weight: 500; font-size: 16px">FAQ</a>
+    </nav>
+    <a href="#" class="btn btn-primary btn-sm" style="background-color: rgb(186, 89, 52);">Chat with Sunni</a>
+  </div>
+</header>
+
+<!-- ─────────── HERO ─────────── -->
+<section class="hero" data-screen-label="01 Hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">AI agents for small businesses</span>
+      <h1>Your website should do more than sit there.</h1>
+      <p class="lede">Sunday Relay builds AI agents that answer questions, book appointments, and help customers help themselves — quietly, on your domain, in your voice.</p>
+      <div class="cta-row">
+        <a href="#" class="btn btn-primary">Book a demo</a>
+        <a href="#how" class="btn btn-secondary" style="border-color: rgb(186, 89, 52); color: rgb(186, 89, 52)">See how it works</a>
+      </div>
+      <div class="trust">
+        <span class="dot"></span>
+        <span>42 agents live this week · Austin, TX</span>
+      </div>
+    </div>
+
+    <!-- Hero chat -->
+    <div class="chat-card" id="heroChat">
+      <div class="chat-head">
+        <span class="live-pill"><span class="pulse"></span> LIVE</span>
+        <span class="channel">Website chat</span>
+        <span class="site-name">Paragon Jiu-Jitsu</span>
+        <button class="close" aria-label="Close">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="chat-body" id="heroChatBody"></div>
+      <div class="chat-input">
+        <input id="heroChatInput" placeholder="Type a message…" disabled />
+        <button class="send" aria-label="Send" style="background-color: rgb(186, 89, 52);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FEATURES STRIP ─────────── -->
+<section class="features">
+  <div class="wrap features-grid">
+    <div class="feature">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div>
+        <h4 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 16px;">Answers your customers</h4>
+        <p>FAQs handled in seconds, not hours. Trained on your own pages.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div>
+        <h4 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 16px;">Books real appointments</h4>
+        <p>On your real calendar. No double bookings, no friction.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div>
+        <h4 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 16px;">Sends confirmations</h4>
+        <p>From your domain, with their okay. Sent before the page closes.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div>
+        <h4 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 16px;">Built for local</h4>
+        <p>Proudly based in Austin, TX. Built for service businesses.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── HOW IT WORKS ─────────── -->
+<section class="section" id="how" data-screen-label="02 How it works">
+  <div class="wrap how-grid">
+    <div>
+      <span class="eyebrow">How it works</span>
+      <h2>Powerful agents.<br/>Simple process.</h2>
+      <span class="italic-accent">We make automation feel easy.</span>
+    </div>
+    <div>
+      <div class="step-row">
+        <div class="step"><div class="num" style="border-style: none;">1</div></div>
+        <span class="connector" style="border-color: rgb(25, 65, 82);"></span>
+        <div class="step"><div class="num" style="border-style: none;">2</div></div>
+        <span class="connector" style="border-color: rgb(25, 65, 82);"></span>
+        <div class="step"><div class="num" style="border-style: none;">3</div></div>
+      </div>
+      <div class="steps" style="margin-top: 22px;">
+        <div class="step">
+          <h4>We learn your workflow</h4>
+          <p>A 45-minute call. We learn how you book, who answers what, and the questions you're tired of answering.</p>
+        </div>
+        <div class="step">
+          <h4>We build your agents</h4>
+          <p>Custom agents are written, tested, and trained against your calendar, hours, and policies — not a template.</p>
+        </div>
+        <div class="step">
+          <h4>You get back to growth</h4>
+          <p>Your agents handle the inbox. You handle the work. We tune things every week so the answers keep improving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── DEMO ─────────── -->
+<section class="section demo-section" id="demo" data-screen-label="03 Demo">
+  <div class="wrap">
+    <div class="demo-head">
+      <div class="left">
+        <span class="eyebrow">See it in action</span>
+        <h2>Pick an industry.<br/>Watch an agent at work.</h2>
+      </div>
+      <p class="meta">Each demo below uses a real transcript pattern from a Sunday Relay deployment. Calendar bookings are simulated.</p>
+    </div>
+
+    <div class="industry-tabs" id="industryTabs">
+      <button class="ind-tab active" data-industry="salon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 7l10 10M7 17L17 7"/><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>
+        Salon
+      </button>
+      <button class="ind-tab" data-industry="gym">Gym</button>
+      <button class="ind-tab" data-industry="pool">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 18c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1"/><path d="M2 13c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1"/></svg>
+        Pool service
+      </button>
+      <button class="ind-tab" data-industry="medspa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L8 8h8z"/><circle cx="12" cy="15" r="6"/></svg>
+        Med spa
+      </button>
+      <button class="ind-tab" data-industry="contractor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 20h20"/><path d="M5 20V9l7-5 7 5v11"/><path d="M10 20v-6h4v6"/></svg>
+        Contractor
+      </button>
+    </div>
+
+    <div class="demo-grid">
+      <div class="demo-side" id="demoSide">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="chat-card" id="demoChatCard">
+        <div class="chat-head">
+          <span class="live-pill"><span class="pulse"></span> LIVE</span>
+          <span class="channel">Website chat</span>
+          <span class="site-name" id="demoSiteName">Cedar &amp; Bloom Salon</span>
+        </div>
+        <div class="chat-body" id="demoChatBody"></div>
+        <div class="chat-input">
+          <input id="demoChatInput" placeholder="Type a message…" disabled />
+          <button class="send" aria-label="Send">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── INDUSTRIES ─────────── -->
+<section class="section" id="industries" data-screen-label="04 Industries">
+  <div class="wrap">
+    <div class="who-head">
+      <div>
+        <span class="eyebrow">Who it's for</span>
+        <h2>Service businesses<br/>with too few hours.</h2>
+      </div>
+      <p class="lede">If your business has a website, a calendar, and more questions than time — you're who we build agents for. Below: a few industries already running on Sunday Relay.</p>
+    </div>
+
+    <div class="industry-grid">
+      <div class="ind-card">
+        <div class="heading-row"><h4>Salons &amp; Barbers</h4></div>
+        <p>Bookings, walk-in waitlists, services &amp; pricing — answered before they bounce.</p>
+        <div class="tags"><span class="tag">Booking</span><span class="tag">Pricing</span><span class="tag">Waitlist</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Dental &amp; Ortho</h4></div>
+        <p>Cleanings, insurance questions, new-patient intake forms routed to the right place.</p>
+        <div class="tags"><span class="tag">Intake</span><span class="tag">Insurance</span><span class="tag">Scheduling</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>HVAC &amp; Plumbing</h4></div>
+        <p>Emergency triage, dispatch windows, and maintenance plan questions — at 2 AM.</p>
+        <div class="tags"><span class="tag">Triage</span><span class="tag">Dispatch</span><span class="tag">After-hours</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Med Spas</h4></div>
+        <p>Treatment FAQs, consult bookings, and pre-care info delivered before the visit.</p>
+        <div class="tags"><span class="tag">Consults</span><span class="tag">Pre-care</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Gyms &amp; Studios</h4></div>
+        <p>Free trials, class schedules, membership FAQs — and a real first-class booking.</p>
+        <div class="tags"><span class="tag">Trials</span><span class="tag">Memberships</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Veterinary</h4></div>
+        <p>Appointment requests, refill prescriptions, and intake — calm hands for anxious owners.</p>
+        <div class="tags"><span class="tag">Refills</span><span class="tag">Intake</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Real Estate</h4></div>
+        <p>Listing inquiries, showings, and pre-qualification screening — without ghosting leads.</p>
+        <div class="tags"><span class="tag">Showings</span><span class="tag">Screening</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Restaurants</h4></div>
+        <p>Reservations, private events, large parties, catering — answered the way you'd answer.</p>
+        <div class="tags"><span class="tag">Reservations</span><span class="tag">Catering</span></div>
+      </div>
+      <div class="ind-card">
+        <div class="heading-row"><h4>Auto Repair</h4></div>
+        <p>Estimates, parts pickups, and service status — keep the phones for the work that matters.</p>
+        <div class="tags"><span class="tag">Estimates</span><span class="tag">Status</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── PRICING / WHAT IT COSTS ─────────── -->
+<section class="section cost-section" id="pricing" data-screen-label="05 Pricing">
+  <div class="wrap cost-grid">
+    <div class="cost-head">
+      <span class="eyebrow">What it costs</span>
+      <h2>Custom pricing,<br/>sent in writing.</h2>
+      <span class="italic-accent">No usage surprises. No per-message charges.</span>
+      <p class="lede">Every build is scoped to your business — number of agents, systems we connect to, expected volume. We send a flat quote after the discovery call, so you know what you're paying before you sign anything.</p>
+    </div>
+    <div>
+      <div class="cost-facts">
+        <div class="cost-fact">
+          <span class="cost-label">Monthly</span>
+          <span class="cost-value">From <span class="placeholder">$XXX</span>/mo</span>
+          <span class="cost-meta">Flat fee, set after scoping. No usage tiers, no per-message charges.</span>
+        </div>
+        <div class="cost-fact">
+          <span class="cost-label">Setup</span>
+          <span class="cost-value"><span class="placeholder">$X,XXX</span> once</span>
+          <span class="cost-meta">One-time build fee, charged when you sign off on launch.</span>
+        </div>
+        <div class="cost-fact">
+          <span class="cost-label">Cancel</span>
+          <span class="cost-value">Any month</span>
+          <span class="cost-meta">No penalty. We'll remove the script and hand you your transcripts.</span>
+        </div>
+      </div>
+      <p class="cost-note">Placeholder figures — final pricing finalizes with our first cohort of customers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FAQ ─────────── -->
+<section class="section faq-section" id="faq" data-screen-label="06 FAQ">
+  <div class="wrap faq-grid">
+    <div>
+      <span class="eyebrow">Questions</span>
+      <h2>FAQ</h2>
+      <p class="small" style="margin-top: 18px; max-width: 280px; color: rgb(25, 65, 82)">
+        Don't see it? Email <a class="help-email" href="/cdn-cgi/l/email-protection#c6aea3bf86b5b3a8a2a7bfb4a3aaa7bfe8a5a9ab"><span class="__cf_email__" data-cfemail="f69e938fb685839892978f84939a978fd895999b">[email&#160;protected]</span></a> — we read everything.
+      </p>
+    </div>
+    <div class="faq-list" id="faqList">
+      <!-- Populated below -->
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── CTA BAND ─────────── -->
+<section class="cta-band">
+  <div class="wrap">
+    <div class="cta-card">
+      <div>
+        <span class="eyebrow">Ready when you are</span>
+        <h2>Let's see what your agent could do.</h2>
+        <span class="italic-accent">A 30-minute demo. No slides, no pressure.</span>
+      </div>
+      <div class="actions">
+        <a href="#" class="btn btn-primary">Book a demo</a>
+        <a href="#" class="btn btn-secondary">Chat with Sunni</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FOOTER ─────────── -->
+<footer class="site">
+  <div class="wrap footer-grid">
+    <div class="brand-block">
+      <a href="#" class="brand">SUNDAY <span class="accent" style="color: rgb(255, 255, 255);">RELAY</span></a>
+      <p>AI agents for service businesses. Built in Austin, deployed on your own domain.</p>
+    </div>
+    <div>
+      <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 700; font-size: 14px;">Product</h5>
+      <ul>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#demo">Live demo</a></li>
+        <li><a href="#industries">Industries</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 14px;">Company</h5>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Customers</a></li>
+        <li><a href="#">Journal</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 14px;">Talk to us</h5>
+      <ul>
+        <li><a href="/cdn-cgi/l/email-protection#6f070a162f1c1a010b0e161d0a030e16410c0002"><span class="__cf_email__" data-cfemail="224a475b6251574c46435b50474e435b0c414d4f">[email&#160;protected]</span></a></li>
+        <li><a href="#">Book a demo</a></li>
+        <li><a href="#">Chat with Sunni</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Sunday Relay, Inc.</span>
+    <span class="austin"><span class="star">★</span> Built in Austin · For service businesses everywhere.</span>
+    <span><a href="#">Privacy</a> · <a href="#">Terms</a></span>
+  </div>
+</footer>
+
+<!-- Tweaks panel host -->
+<div id="tweaks-root"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ─────────── Shared utilities ─────────── */
+function escapeHTML(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* ─────────── Dynamic chat player ─────────── */
+function createChatPlayer(body, input) {
+  let token = 0;
+
+  function scrollDown() { body.scrollTop = body.scrollHeight; }
+
+  function addTyping() {
+    const el = document.createElement("div");
+    el.className = "typing";
+    el.innerHTML = "<span></span><span></span><span></span>";
+    body.appendChild(el);
+    scrollDown();
+    return el;
+  }
+
+  function addMessage(msg) {
+    const el = document.createElement("div");
+    el.className = `msg ${msg.who}`;
+    el.innerHTML = `
+      <span class="label">${msg.who === "agent" ? "SUNDAY RELAY" : "VISITOR"}</span>
+      ${escapeHTML(msg.text)}
+      ${msg.booked ? `<div class="booked"><span class="pill" style="background-color: rgb(174, 199, 208);">${escapeHTML(msg.booked.pill)}</span><span>${escapeHTML(msg.booked.line)}</span></div>` : ""}
+      <span class="time">${escapeHTML(msg.time)}</span>
+    `;
+    body.appendChild(el);
+    scrollDown();
+    return el;
+  }
+
+  function clearInput() {
+    if (!input) return;
+    input.value = "";
+    input.placeholder = "Type a message…";
+  }
+
+  async function typeIntoInput(text, alive) {
+    if (!input) { await sleep(Math.min(1400, 400 + text.length * 35)); return; }
+    input.value = "";
+    input.placeholder = "";
+    for (let i = 0; i < text.length; i++) {
+      if (!alive()) return;
+      input.value += text[i];
+      const ch = text[i];
+      const delay = ch === " " ? 45 : (ch === "," || ch === "." || ch === "—") ? 110 : 28 + Math.random() * 55;
+      await sleep(delay);
+    }
+  }
+
+  async function playMessage(msg, isFirst, alive) {
+    if (!alive()) return;
+    if (msg.who === "agent") {
+      if (!isFirst) await sleep(450);
+      if (!alive()) return;
+      const t = addTyping();
+      const dur = Math.min(2000, 500 + msg.text.length * 16);
+      await sleep(dur);
+      if (!alive()) { t.remove(); return; }
+      t.remove();
+      addMessage(msg);
+    } else {
+      await sleep(400);
+      if (!alive()) return;
+      await typeIntoInput(msg.text, alive);
+      if (!alive()) return;
+      await sleep(240);
+      clearInput();
+      addMessage(msg);
+    }
+  }
+
+  async function play(script, opts = {}) {
+    token++;
+    const mine = token;
+    const alive = () => mine === token;
+    const loop = opts.loop !== false;
+
+    do {
+      if (!alive()) return;
+      body.innerHTML = "";
+      clearInput();
+      await sleep(opts.startDelay || 400);
+      for (let i = 0; i < script.length; i++) {
+        if (!alive()) return;
+        await playMessage(script[i], i === 0, alive);
+      }
+      if (!alive()) return;
+      await sleep(opts.holdMs || 5500);
+    } while (loop && alive());
+  }
+
+  function cancel() { token++; clearInput(); }
+
+  return { play, cancel };
+}
+
+/* ─────────── Hero chat ─────────── */
+(function() {
+  const body = document.getElementById("heroChatBody");
+  const input = document.getElementById("heroChatInput");
+  if (!body) return;
+
+  const HERO_SCRIPT = [
+    { who: "agent", text: "Hey — welcome to Paragon. Ask about classes, schedules, or your first free trial.", time: "10:42 AM" },
+    { who: "user",  text: "Does this gym have free trial classes?", time: "10:42 AM" },
+    { who: "agent", text: "We do. Every new student gets one free week. Want me to put you on the list for your first class?", time: "10:43 AM" },
+    { who: "user",  text: "Sure — how about Thursday?", time: "10:43 AM" },
+    { who: "agent", text: "Thursday we have a beginner's class at 6:45 PM. Want me to book it?", time: "10:43 AM" },
+    { who: "user",  text: "Yes please", time: "10:44 AM" },
+    { who: "agent", text: "Great. What name should I put it under?", time: "10:44 AM" },
+    { who: "user",  text: "Alex Rivera", time: "10:44 AM" },
+    { who: "agent", text: "Thanks Alex. Would you prefer the confirmation by text or email?", time: "10:44 AM" },
+    { who: "user",  text: "Email please", time: "10:45 AM" },
+    { who: "agent", text: "Sounds good — what email should I send it to?", time: "10:45 AM" },
+    { who: "user",  text: "alex.rivera@gmail.com", time: "10:45 AM" },
+    { who: "agent", text: "All set. Confirmation on its way.", time: "10:46 AM",
+      booked: { pill: "Booked", line: "Thu · 6:45 PM · Fundamentals · Alex Rivera" } }
+  ];
+
+  const player = createChatPlayer(body, input);
+
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        io.disconnect();
+        player.play(HERO_SCRIPT, { loop: true });
+      }
+    }, { threshold: 0.15 });
+    io.observe(body);
+  } else {
+    player.play(HERO_SCRIPT, { loop: true });
+  }
+})();
+
+/* ─────────── Demo / industry transcripts ─────────── */
+const INDUSTRIES = {
+  salon: {
+    site: "Cedar & Bloom Salon",
+    label: "Cedar & Bloom",
+    headline: "Books cuts, color, and consults.",
+    blurb: "From walk-in waitlists to balayage consults, the salon agent handles the inbox so your front-desk can focus on the chair.",
+    bullets: [
+      "Service menu + pricing answered instantly",
+      "Books to Square Appointments, Booker, or Vagaro",
+      "Knows your stylists' specialties"
+    ],
+    messages: [
+      { who: "agent", text: "Hey — welcome to Cedar & Bloom. What can I help you book?", time: "2:14 PM" },
+      { who: "user",  text: "Do you do balayage on dark hair? Roughly what would it run?", time: "2:14 PM" },
+      { who: "agent", text: "Yes — most of our stylists do. On medium-dark hair, balayage starts at $245 and runs 3–4 hours. Want me to find you a slot?", time: "2:15 PM" },
+      { who: "user",  text: "Saturday afternoon if anyone's open", time: "2:15 PM" },
+      { who: "agent", text: "Marisol has 1:30 PM open this Saturday — she specializes in lived-in color. Want me to hold it for you?", time: "2:16 PM" },
+      { who: "user",  text: "Yes please", time: "2:16 PM" },
+      { who: "agent", text: "Great. What name should I put it under?", time: "2:16 PM" },
+      { who: "user",  text: "Maya Chen", time: "2:17 PM" },
+      { who: "agent", text: "Thanks Maya. Would you prefer the confirmation by text or email?", time: "2:17 PM" },
+      { who: "user",  text: "Email", time: "2:17 PM" },
+      { who: "agent", text: "Got it — what email should I send it to?", time: "2:17 PM" },
+      { who: "user",  text: "maya.chen@gmail.com", time: "2:18 PM" },
+      { who: "agent", text: "Held under your name. Confirmation on the way.", time: "2:18 PM",
+        booked: { pill: "Held", line: "Sat · 1:30 PM · Marisol · Maya Chen" } }
+    ]
+  },
+  gym: {
+    site: "Paragon Jiu-Jitsu",
+    label: "Paragon JJ",
+    headline: "Books trial classes 24/7.",
+    blurb: "Gym agents answer schedule and pricing questions, then place real bodies in real beginner classes — even at midnight.",
+    bullets: [
+      "Free trial bookings on your real schedule",
+      "Membership tier explainers, no upsell pressure",
+      "Routes injury & medical questions to staff"
+    ],
+    messages: [
+      { who: "agent", text: "Hey — welcome to Paragon. Ask about classes, schedules, or your first free trial.", time: "10:42 AM" },
+      { who: "user",  text: "I'm totally new. Is there a beginner class this week?", time: "10:42 AM" },
+      { who: "agent", text: "Yes. Fundamentals runs Tue and Thu at 6:45 PM, and Sat at 10 AM. Your first week is free.", time: "10:43 AM" },
+      { who: "user",  text: "Thursday works", time: "10:43 AM" },
+      { who: "agent", text: "Want me to book your first class for Thursday at 6:45?", time: "10:43 AM" },
+      { who: "user",  text: "Yes please", time: "10:44 AM" },
+      { who: "agent", text: "Great. What name should I put it under?", time: "10:44 AM" },
+      { who: "user",  text: "Alex Rivera", time: "10:44 AM" },
+      { who: "agent", text: "Thanks Alex. Would you prefer the confirmation by text or email?", time: "10:44 AM" },
+      { who: "user",  text: "Text works", time: "10:45 AM" },
+      { who: "agent", text: "Got it — what's the best number?", time: "10:45 AM" },
+      { who: "user",  text: "(512) 555-0188", time: "10:45 AM" },
+      { who: "agent", text: "Booked. Wear loose clothes — we'll loan you a gi. Text confirmation on its way.", time: "10:46 AM",
+        booked: { pill: "Booked", line: "Thu · 6:45 PM · Fundamentals · Alex Rivera" } }
+    ]
+  },
+  pool: {
+    site: "Hill Country Pool Co.",
+    label: "Hill Country Pool",
+    headline: "Triages and dispatches.",
+    blurb: "Service agents collect what your techs need before the truck rolls — equipment, symptoms, photos, address — and put it on the schedule.",
+    bullets: [
+      "Photo upload + symptom collection",
+      "Knows your service area + dispatch windows",
+      "Quotes recurring plans without the hard sell"
+    ],
+    messages: [
+      { who: "agent", text: "Hey — Hill Country Pool here. What's going on with your pool?", time: "7:08 AM" },
+      { who: "user",  text: "Water turned green overnight. Filter sounds normal.", time: "7:08 AM" },
+      { who: "agent", text: "Sounds like an algae bloom — common this week with the heat. Can you send a photo and your zip? I can dispatch a tech if you're inside our area.", time: "7:09 AM" },
+      { who: "user",  text: "78704. Photo attached.", time: "7:09 AM" },
+      { who: "agent", text: "You're in our area. Want me to hold a same-day 2–4 PM window? $89 trip + chemicals.", time: "7:10 AM" },
+      { who: "user",  text: "Yes please", time: "7:10 AM" },
+      { who: "agent", text: "What name should I put the service call under?", time: "7:10 AM" },
+      { who: "user",  text: "Jordan Mills", time: "7:11 AM" },
+      { who: "agent", text: "Thanks Jordan. Would you prefer the confirmation by text or email?", time: "7:11 AM" },
+      { who: "user",  text: "Text — easier on the go", time: "7:11 AM" },
+      { who: "agent", text: "Makes sense. What's the best number?", time: "7:11 AM" },
+      { who: "user",  text: "(512) 555-0263", time: "7:12 AM" },
+      { who: "agent", text: "Scheduled. Your tech will text 20 minutes before arrival.", time: "7:12 AM",
+        booked: { pill: "Scheduled", line: "Today · 2–4 PM · Same-day service · Jordan Mills" } }
+    ]
+  },
+  medspa: {
+    site: "North Loop Aesthetics",
+    label: "North Loop",
+    headline: "Books consults, sends pre-care.",
+    blurb: "Med spa agents walk visitors through treatments, qualify candidacy, and book consults — then deliver pre-care info on the right cadence.",
+    bullets: [
+      "Treatment FAQs in your provider's voice",
+      "Books consults; refers urgent care elsewhere",
+      "Sends pre-care 72/24 hours before the visit"
+    ],
+    messages: [
+      { who: "agent", text: "Welcome to North Loop. Looking to learn about a treatment or book a consult?", time: "11:20 AM" },
+      { who: "user",  text: "How long does a lip filler appointment usually take?", time: "11:21 AM" },
+      { who: "agent", text: "About 45 minutes, including numbing. Most clients head straight back to work. First-timers do a 20-minute consult with our injector — usually same week.", time: "11:21 AM" },
+      { who: "user",  text: "Can I do the consult Friday morning?", time: "11:22 AM" },
+      { who: "agent", text: "Dr. Park has 9:30 AM open Friday. Want me to hold it for you?", time: "11:22 AM" },
+      { who: "user",  text: "Yes please", time: "11:23 AM" },
+      { who: "agent", text: "Great. What name should I put the consult under?", time: "11:23 AM" },
+      { who: "user",  text: "Sara Patel", time: "11:23 AM" },
+      { who: "agent", text: "Thanks Sara. Would you prefer the confirmation by text or email?", time: "11:23 AM" },
+      { who: "user",  text: "Email please", time: "11:24 AM" },
+      { who: "agent", text: "Sounds good — what email should I send it to?", time: "11:24 AM" },
+      { who: "user",  text: "sara.patel@gmail.com", time: "11:24 AM" },
+      { who: "agent", text: "Held. Pre-care notes will go out the day before.", time: "11:25 AM",
+        booked: { pill: "Held", line: "Fri · 9:30 AM · Consult · Sara Patel" } }
+    ]
+  },
+  contractor: {
+    site: "Mesa Build Co.",
+    label: "Mesa Build",
+    headline: "Qualifies leads, books estimates.",
+    blurb: "Contractor agents screen projects against scope and area, then put serious leads on the estimator's calendar — and tell you about them.",
+    bullets: [
+      "Screens by scope, budget, timeline",
+      "Books on-site estimates in the right zone",
+      "Pings your phone for emergency repairs"
+    ],
+    messages: [
+      { who: "agent", text: "Hi — Mesa Build. What kind of project are you thinking about?", time: "8:55 AM" },
+      { who: "user",  text: "Full kitchen remodel. Mid-range, hoping to start late summer.", time: "8:55 AM" },
+      { who: "agent", text: "Great fit for us. Couple quick ones: what's your zip, and is it a single-wall or full layout change?", time: "8:56 AM" },
+      { who: "user",  text: "78704. Full layout — moving the island.", time: "8:56 AM" },
+      { who: "agent", text: "Sam handles full kitchen redesigns in your area. He's free for an on-site estimate next Wed at 4 PM. Want me to hold it?", time: "8:57 AM" },
+      { who: "user",  text: "Yes please", time: "8:57 AM" },
+      { who: "agent", text: "What name should I put the estimate under?", time: "8:57 AM" },
+      { who: "user",  text: "Devon Brooks", time: "8:58 AM" },
+      { who: "agent", text: "Thanks Devon. Would you prefer the confirmation by text or email?", time: "8:58 AM" },
+      { who: "user",  text: "Text is fine", time: "8:58 AM" },
+      { who: "agent", text: "Great — what's the best number for Sam to reach you at?", time: "8:58 AM" },
+      { who: "user",  text: "(512) 555-0421", time: "8:59 AM" },
+      { who: "agent", text: "Held. Sam will text you to confirm the address.", time: "8:59 AM",
+        booked: { pill: "Held", line: "Wed · 4:00 PM · On-site estimate · Devon Brooks" } }
+    ]
+  }
+};
+
+/* ─────────── Render demo ─────────── */
+const demoSide = document.getElementById("demoSide");
+const demoChatBody = document.getElementById("demoChatBody");
+const demoChatInput = document.getElementById("demoChatInput");
+const demoSiteName = document.getElementById("demoSiteName");
+const tabs = document.querySelectorAll(".ind-tab");
+
+function renderIndustry(key) {
+  const data = INDUSTRIES[key];
+  demoSiteName.textContent = data.site;
+
+  demoSide.innerHTML = `
+    <span class="label">${escapeHTML(data.label)}</span>
+    <h3>${escapeHTML(data.headline)}</h3>
+    <p class="blurb">${escapeHTML(data.blurb)}</p>
+    <ul>
+      ${data.bullets.map(b => `
+        <li>
+          <span class="tick">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          ${escapeHTML(b)}
+        </li>
+      `).join("")}
+    </ul>
+  `;
+
+  // Static transcript render — full conversation visible at once
+  demoChatBody.innerHTML = data.messages.map(msg => `
+    <div class="msg ${msg.who}">
+      <span class="label">${msg.who === "agent" ? "SUNDAY RELAY" : "VISITOR"}</span>
+      ${escapeHTML(msg.text)}
+      ${msg.booked ? `<div class="booked"><span class="pill" style="background-color: rgb(174, 199, 208);">${escapeHTML(msg.booked.pill)}</span><span>${escapeHTML(msg.booked.line)}</span></div>` : ""}
+      <span class="time">${escapeHTML(msg.time)}</span>
+    </div>
+  `).join("");
+  demoChatBody.scrollTop = 0;
+}
+
+tabs.forEach(t => {
+  t.addEventListener("click", () => {
+    tabs.forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    renderIndustry(t.dataset.industry);
+  });
+});
+
+renderIndustry("salon");
+
+/* ─────────── FAQ ─────────── */
+const FAQS = [
+  {
+    q: "Will my customers know it's an AI?",
+    a: "The agent introduces itself by name and never pretends to be a person. Most visitors don't ask — they just want their question answered. The ones who do, it tells them straight. If they want a human, it takes a clean message and gets one to them."
+  },
+  {
+    q: "What if it doesn't know the answer?",
+    a: "It says so, takes a message, and pings whoever's on call. We'd rather it hand off gracefully than make something up. Every missed question becomes training the next morning."
+  },
+  {
+    q: "How does it install on my website?",
+    a: "One line of script in your site's <head>. Works on Webflow, Squarespace, WordPress, Shopify, Wix, and anything custom. Color, position, and copy all match your brand — we set that up during onboarding."
+  },
+  {
+    q: "Can it actually book on my calendar?",
+    a: "Yes. It reads live availability from Google Calendar, Outlook, Acuity, Calendly, Square, and Jobber — and writes back when it books. If you run something custom, we'll take a look. We've built integrations in a week before."
+  },
+  {
+    q: "Does it send confirmation emails?",
+    a: "Only if you opt in. Emails go through your Gmail or Outlook, so they look like they're from you — not a random Sunday Relay address."
+  },
+  {
+    q: "How long does setup actually take?",
+    a: "About three weeks from signed proposal to live. Week 1 we read your stuff. Week 2 you review the answers. Week 3 is a soft launch on your site before we turn it loose."
+  },
+  {
+    q: "What if I hate it?",
+    a: "Cancel any month, no penalty. We'll remove the script, hand you the transcripts, and shake your hand. We'd rather you leave clean than stay annoyed."
+  }
+];
+
+const faqList = document.getElementById("faqList");
+FAQS.forEach((f, i) => {
+  const item = document.createElement("div");
+  item.className = "faq-item";
+  item.innerHTML = `
+    <button class="faq-q" aria-expanded="false">
+      <span>${escapeHTML(f.q)}</span>
+      <span class="plus">+</span>
+    </button>
+    <div class="faq-a">
+      <div class="faq-a-inner">${escapeHTML(f.a)}</div>
+    </div>
+  `;
+  faqList.appendChild(item);
+  const btn = item.querySelector(".faq-q");
+  const ans = item.querySelector(".faq-a");
+  btn.addEventListener("click", () => {
+    const open = item.classList.toggle("open");
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    ans.style.maxHeight = open ? ans.scrollHeight + "px" : "0px";
+    item.querySelector(".plus").textContent = open ? "−" : "+";
+  });
+  if (i === 0) {
+    item.classList.add("open");
+    btn.setAttribute("aria-expanded", "true");
+    item.querySelector(".plus").textContent = "−";
+    // open on next frame so scrollHeight is correct
+    requestAnimationFrame(() => { ans.style.maxHeight = ans.scrollHeight + "px"; });
+  }
+});
+</script>
+
+<!-- ─────────── Tweaks ─────────── -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const SR_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "palette": [
+    "#BA5934",
+    "#194152",
+    "#AEC7D0"
+  ],
+  "headlineSize": 80,
+  "showLiveTrust": false,
+  "denseFeatures": false,
+  "headerStyle": "bold"
+}/*EDITMODE-END*/;
+
+const PALETTES = [
+  ["#BA5934", "#194152", "#AEC7D0"], // default — terracotta / navy / blue
+  ["#C59A3D", "#194152", "#AEC7D0"], // mustard accent
+  ["#2D6A4F", "#194152", "#AEC7D0"], // forest
+  ["#7A3B2E", "#1E3A47", "#C7D6DA"]  // deeper editorial
+];
+
+function SunnyTweaks() {
+  const [t, setTweak] = useTweaks(SR_TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    const r = document.documentElement;
+    r.style.setProperty("--terracotta", t.palette[0]);
+    r.style.setProperty("--navy",      t.palette[1]);
+    r.style.setProperty("--blue",      t.palette[2]);
+
+    document.querySelectorAll("h1").forEach(h => {
+      h.style.fontSize = t.headlineSize + "px";
+    });
+
+    document.querySelector(".hero .trust").style.display = t.showLiveTrust ? "" : "none";
+
+    const grid = document.querySelector(".features-grid");
+    if (grid) grid.style.padding = (t.denseFeatures ? 36 : 56) + "px 0";
+
+    document.querySelectorAll("h1, h2").forEach(h => {
+      h.style.fontWeight = t.headerStyle === "bold" ? 700 : 600;
+    });
+  }, [t]);
+
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection title="Palette">
+        <TweakColor
+          label="Accent stack"
+          value={t.palette}
+          onChange={v => setTweak("palette", v)}
+          options={PALETTES}
+        />
+      </TweakSection>
+      <TweakSection title="Type">
+        <TweakSlider
+          label="Headline size"
+          value={t.headlineSize}
+          onChange={v => setTweak("headlineSize", v)}
+          min={48} max={96} step={2} suffix="px"
+        />
+        <TweakRadio
+          label="Header weight"
+          value={t.headerStyle}
+          onChange={v => setTweak("headerStyle", v)}
+          options={[
+            { value: "semi", label: "Semibold" },
+            { value: "bold", label: "Bold" }
+          ]}
+        />
+      </TweakSection>
+      <TweakSection title="Layout">
+        <TweakToggle
+          label="Show live trust line"
+          value={t.showLiveTrust}
+          onChange={v => setTweak("showLiveTrust", v)}
+        />
+        <TweakToggle
+          label="Dense features strip"
+          value={t.denseFeatures}
+          onChange={v => setTweak("denseFeatures", v)}
+        />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<SunnyTweaks />);
+</script>
+
+</body>
+</html>
