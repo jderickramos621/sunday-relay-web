@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>Sunday Relay — AI agents for real businesses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,7 +27,11 @@
   }
 
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
+  html, body { margin: 0; padding: 0; max-width: 100%; }
+  /* overflow-x: clip prevents horizontal scroll WITHOUT breaking position: sticky
+     (overflow-x: hidden creates a new scroll container and kills sticky descendants) */
+  html { overflow-x: clip; -webkit-text-size-adjust: 100%; }
+  body { overflow-x: clip; }
   body {
     font-family: var(--sans);
     color: var(--text);
@@ -159,7 +163,103 @@
   }
   .nav-links a { position: relative; padding: 6px 0; }
   .nav-links a:hover { color: var(--terracotta); }
-  @media (max-width: 880px) { .nav-links { display: none; } }
+
+  /* ─────────── Mobile nav ─────────── */
+  .nav-toggle {
+    display: none;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--navy);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-left: 10px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .nav-toggle:hover { color: var(--terracotta); }
+  .nav-toggle .bars {
+    position: relative;
+    width: 22px;
+    height: 16px;
+  }
+  .nav-toggle .bars span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: currentColor;
+    border-radius: 1px;
+    transform-origin: center;
+    transition: transform 0.25s ease, opacity 0.2s ease, top 0.25s ease;
+  }
+  .nav-toggle .bars span:nth-child(1) { top: 0; }
+  .nav-toggle .bars span:nth-child(2) { top: 7px; }
+  .nav-toggle .bars span:nth-child(3) { top: 14px; }
+  body.menu-open .nav-toggle .bars span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+  body.menu-open .nav-toggle .bars span:nth-child(2) { opacity: 0; }
+  body.menu-open .nav-toggle .bars span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
+
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    z-index: 49;
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.28s ease, opacity 0.22s ease;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+  }
+  body.menu-open .mobile-nav { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .mobile-nav-inner {
+    padding: 14px 22px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-nav a {
+    display: block;
+    padding: 16px 4px;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--navy);
+    letter-spacing: 0.01em;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-nav a:last-of-type { border-bottom: none; }
+  .mobile-nav .mobile-cta {
+    margin-top: 22px;
+    border-bottom: none;
+    padding: 0;
+  }
+  .mobile-nav .mobile-cta .btn {
+    /* Re-assert flex + white text because .mobile-nav a sets display:block and color:navy */
+    display: inline-flex;
+    width: auto;
+    align-self: flex-start;
+    height: 38px;
+    padding: 0 18px;
+    font-size: 13.5px;
+    border-radius: 8px;
+    color: #fff;
+  }
+  .mobile-nav .mobile-cta .btn:hover { color: #fff; }
+
+  @media (max-width: 880px) {
+    .nav-links { display: none; }
+    .nav .btn-primary.btn-sm { display: none; }
+    .nav-toggle { display: inline-flex; }
+    .mobile-nav { display: block; }
+  }
 
   /* ─────────── Hero ─────────── */
   .hero {
@@ -255,12 +355,15 @@
   }
   .chat-head .close {
     width: 22px; height: 22px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: none;
+    background: transparent;
+    padding: 0;
     display: grid; place-items: center;
     color: var(--muted);
-    background: #fff;
+    cursor: pointer;
+    transition: color 0.18s;
   }
+  .chat-head .close:hover { color: var(--navy); }
   .chat-body {
     padding: 22px 20px 18px;
     display: flex;
@@ -371,6 +474,10 @@
     font-size: 13.5px;
     color: var(--text);
     outline: none;
+    min-width: 0;
+  }
+  @media (max-width: 720px) {
+    .chat-input input { font-size: 16px; }
   }
   .chat-input input::placeholder { color: #9C9F9A; }
   .chat-input .send {
@@ -392,16 +499,19 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
-    padding: 56px 0;
+    /* Use padding-top/bottom only so we don't override .wrap's horizontal padding */
+    padding-top: 56px;
+    padding-bottom: 56px;
   }
   @media (max-width: 880px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
   .feature {
     display: flex;
-    gap: 18px;
+    flex-direction: column;
+    gap: 16px;
     align-items: flex-start;
   }
   .feature .icon {
-    width: 56px; height: 56px;
+    width: 48px; height: 48px;
     border: 1px solid var(--navy);
     border-radius: 50%;
     color: var(--navy);
@@ -617,35 +727,35 @@
     padding: 88px 0;
   }
   .cost-grid {
-    display: grid;
-    grid-template-columns: 0.95fr 1.05fr;
-    gap: 72px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    align-items: stretch;
   }
-  @media (max-width: 880px) { .cost-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .cost-head { max-width: 720px; }
   .cost-head h2 { margin-top: 12px; }
   .cost-head .italic-accent { display: block; margin-top: 14px; }
-  .cost-head .lede { margin-top: 18px; max-width: 460px; color: #1F3B47; }
+  .cost-head .lede { margin-top: 18px; color: #1F3B47; }
+  .cost-body { width: 100%; }
   .cost-facts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border-top: 1px solid rgba(25, 65, 82, 0.22);
     border-bottom: 1px solid rgba(25, 65, 82, 0.22);
+    text-align: left;
   }
   @media (max-width: 720px) { .cost-facts { grid-template-columns: 1fr; } }
   .cost-fact {
-    padding: 26px 24px 26px 0;
+    padding: 28px 32px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     border-right: 1px solid rgba(25, 65, 82, 0.13);
   }
-  .cost-fact:not(:first-child) { padding-left: 24px; }
-  .cost-fact:last-child { border-right: none; padding-right: 0; }
+  .cost-fact:last-child { border-right: none; }
   @media (max-width: 720px) {
-    .cost-fact { border-right: none; border-bottom: 1px solid rgba(25, 65, 82, 0.13); padding: 22px 0; }
+    .cost-fact { border-right: none; border-bottom: 1px solid rgba(25, 65, 82, 0.13); padding: 22px 4px; }
     .cost-fact:last-child { border-bottom: none; }
-    .cost-fact:not(:first-child) { padding-left: 0; }
   }
   .cost-label {
     font-size: 11.5px;
@@ -762,7 +872,9 @@
     display: grid;
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
     gap: 40px;
-    padding: 72px 0 36px;
+    /* longhand so .wrap's horizontal padding survives */
+    padding-top: 72px;
+    padding-bottom: 36px;
   }
   @media (max-width: 880px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
   footer.site h5 {
@@ -917,6 +1029,10 @@
     font-size: 13.5px;
     color: var(--text);
     outline: none;
+    min-width: 0;
+  }
+  @media (max-width: 720px) {
+    .sunni-foot input { font-size: 16px; }
   }
   .sunni-foot input::placeholder { color: #9C9F9A; }
   .sunni-foot .send {
@@ -949,6 +1065,40 @@
   .row { display: flex; align-items: center; }
   .hidden { display: none !important; }
 
+  /* Prevent inputs from triggering iOS auto-zoom (≥16px) */
+  input, textarea, select { font-size: 16px; }
+
+  /* Keep chat surfaces and other wide content from creating horizontal scroll */
+  img, svg, video, canvas { max-width: 100%; }
+  .chat-card { max-width: 100%; min-width: 0; }
+  .hero-grid > * { min-width: 0; }
+  .demo-grid > * { min-width: 0; }
+
+  @media (max-width: 720px) {
+    h1 { font-size: clamp(36px, 9vw, 56px); }
+    h2 { font-size: clamp(30px, 7.5vw, 44px); }
+    .section { padding: 64px 0; }
+    .hero { padding: 48px 0 64px; }
+    .cost-section { padding: 64px 0; }
+    .cta-band { padding: 56px 0; }
+    .features-grid { padding-top: 40px; padding-bottom: 40px; gap: 24px; }
+    .cta-card { padding: 32px 24px; }
+    .industry-tabs { gap: 6px; margin: 28px 0 22px; }
+    .ind-tab { padding: 11px 13px; font-size: 13px; }
+    .demo-side { padding: 22px 22px 24px; }
+    .footer-grid { padding-top: 56px; padding-bottom: 28px; gap: 32px; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+
+  @media (max-width: 480px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .hero-facts { gap: 6px; font-size: 12px; }
+  }
+
+  /* Lock the Sunni drawer chat to viewport; never let it cause page-level scroll-zoom on mobile */
+  .sunni-drawer { touch-action: manipulation; }
+  .sunni-foot { touch-action: manipulation; }
+
   /* hide injected mention attribute side effects */
   [data-screen-label] { /* nothing */ }
 </style>
@@ -967,6 +1117,21 @@
         <a href="#faq" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">FAQ</a>
       </nav>
     <a href="#" class="btn btn-primary btn-sm" data-open-sunni>Chat with Sunni</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav" type="button">
+      <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+  <div class="mobile-nav" id="mobileNav" aria-hidden="true">
+    <div class="mobile-nav-inner">
+      <a href="#how" data-mobile-link>How it works</a>
+      <a href="#demo" data-mobile-link>Demo</a>
+      <a href="#industries" data-mobile-link>Industries</a>
+      <a href="#pricing" data-mobile-link>Pricing</a>
+      <a href="#faq" data-mobile-link>FAQ</a>
+      <div class="mobile-cta">
+        <a href="#" class="btn btn-primary" data-open-sunni data-mobile-link>Chat with Sunni</a>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -997,7 +1162,7 @@
         <span class="channel">Website chat</span>
         <span class="site-name">Paragon Jiu-Jitsu</span>
         <button class="close" aria-label="Close">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="chat-body" id="heroChatBody"></div>
@@ -1207,7 +1372,7 @@
       <span class="italic-accent">No usage surprises. No per-message charges.</span>
       <p class="lede">Every build is scoped to your business — number of agents, systems we connect to, expected volume. We send a flat quote after the discovery call, so you know what you're paying before you sign anything.</p>
     </div>
-    <div>
+    <div class="cost-body">
       <div class="cost-facts">
         <div class="cost-fact">
           <span class="cost-label">Monthly</span>
@@ -1225,7 +1390,6 @@
           <span class="cost-meta">No penalty. We'll remove the script and hand you your transcripts.</span>
         </div>
       </div>
-      <p class="cost-note">Placeholder figures — final pricing finalizes with our first cohort of customers.</p>
     </div>
   </div>
 </section>
@@ -1257,7 +1421,7 @@
       </div>
       <div class="actions">
         <a href="#" class="btn btn-primary">Book a demo</a>
-        <a href="#" class="btn btn-secondary" style="border-color: rgb(25, 65, 82); color: rgb(186, 89, 52)" data-open-sunni>Chat with Sunni</a>
+        <a href="#" class="btn btn-secondary" style="border-color: rgb(25, 65, 82); color: rgb(25, 65, 82)" data-open-sunni>Chat with Sunni</a>
       </div>
     </div>
   </div>
@@ -1334,7 +1498,38 @@
 <div id="tweaks-root"></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const SESSION_ID = crypto.randomUUID();
+/* ─────────── Mobile nav toggle ─────────── */
+(function() {
+  const toggle = document.getElementById("navToggle");
+  const mobileNav = document.getElementById("mobileNav");
+  if (!toggle || !mobileNav) return;
+
+  function setOpen(open) {
+    document.body.classList.toggle("menu-open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    mobileNav.setAttribute("aria-hidden", open ? "false" : "true");
+  }
+
+  toggle.addEventListener("click", () => {
+    setOpen(!document.body.classList.contains("menu-open"));
+  });
+
+  mobileNav.addEventListener("click", (e) => {
+    if (e.target.closest("[data-mobile-link]")) setOpen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("menu-open")) setOpen(false);
+  });
+
+  // Close if we resize past the breakpoint
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 880 && document.body.classList.contains("menu-open")) setOpen(false);
+  });
+})();
+
+const SESSION_ID = crypto.randomUUID();
 /* ─────────── Shared utilities ─────────── */
 function escapeHTML(str) {
   return String(str)
