@@ -925,7 +925,14 @@
     align-items: stretch;
   }
   @media (max-width: 980px) {
-    .pricing-grid { grid-template-columns: 1fr; gap: 14px; }
+    .pricing-grid { grid-template-columns: 1fr; gap: 40px; }
+    .price-card { padding: 40px 28px 36px; }
+  }
+  @media (max-width: 720px) {
+    .pricing-grid { gap: 48px; }
+    /* Featured pill needs a touch more clearance from the gap above it
+       so it doesn't visually crowd the card border below. */
+    .price-card.is-featured { margin-top: 4px; }
   }
 
   .price-card {
@@ -1329,11 +1336,18 @@
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 0s linear 0.4s;
+    visibility: hidden;
     border-left: 1px solid var(--border);
     box-shadow: -24px 0 60px -20px rgba(25, 65, 82, 0.22);
   }
-  body.sunni-open .sunni-drawer { transform: translateX(0); }
+  body.sunni-open .sunni-drawer {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 0s linear 0s;
+  }
 
   .sunni-grab { display: none; }
 
@@ -1344,13 +1358,27 @@
       left: 0;
       bottom: 0;
       width: 100%;
+      /* Use dvh where supported so iOS Safari's chrome-visible viewport
+         doesn't leave the drawer's edge peeking above the bottom bar.
+         Belt and suspenders: translateY(105%) gives a sub-pixel buffer,
+         and visibility:hidden (handled on the base rule above) ensures
+         it isn't painted at all when closed. */
       height: 88vh;
+      height: 88dvh;
       border-left: none;
       border-top: 1px solid var(--border);
       border-radius: 16px 16px 0 0;
-      transform: translateY(100%);
+      transform: translateY(105%);
     }
-    body.sunni-open .sunni-drawer { transform: translateY(0); }
+    /* When OPEN on mobile, fill the full visual viewport. Otherwise the
+       88dvh height shrinks when the keyboard opens, exposing the page
+       below the drawer between its bottom edge and the keyboard top. */
+    body.sunni-open .sunni-drawer {
+      transform: translateY(0);
+      height: 100vh;
+      height: 100dvh;
+      border-radius: 0;
+    }
     .sunni-grab {
       display: block;
       width: 38px;
@@ -2354,7 +2382,7 @@
           <li>Transcript history</li>
           <li>Ongoing support</li>
         </ul>
-        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for photographers, cleaning companies, pet services, and pool companies.</span>
+        <span class="price-fit" style="font-family: Inter; font-size: 12px">Best for photographers, cleaning companies, pet services, and pool companies.</span>
       </div>
 
       <!-- Tier 2 — Booking Assistant (featured) -->
@@ -2382,7 +2410,7 @@
           <li>FAQ automation</li>
           <li>Monthly tuning + support</li>
         </ul>
-        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for salons, med spas, gyms, and martial arts schools.</span>
+        <span class="price-fit" style="font-family: Inter; font-size: 12px">Best for salons, med spas, gyms, and martial arts schools.</span>
       </div>
 
       <!-- Tier 3 — Operations Assistant -->
@@ -2409,7 +2437,7 @@
           <li>Advanced escalation logic</li>
           <li>Operational automations</li>
         </ul>
-        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for larger home service businesses and multi-location operators.</span>
+        <span class="price-fit" style="font-family: Inter; font-size: 12px">Best for larger home service businesses and multi-location operators.</span>
       </div>
     </div>
 
@@ -2840,15 +2868,15 @@ const INDUSTRIES = {
       "Knows your stylists' specialties"
     ],
     messages: [
-      { who: "agent", text: "Hey — welcome to Cedar & Bloom. What can I help with?", time: "2:14 PM" },
-      { who: "user",  text: "do you guys do balayage on dark hair? how much usually", time: "2:14 PM" },
-      { who: "agent", text: "Yep — most of our stylists do it. On dark hair it starts at $245, takes about 3–4 hrs.", time: "2:15 PM" },
-      { who: "user",  text: "ok cool. anyone open sat?", time: "2:15 PM" },
-      { who: "agent", text: "Marisol has 1:30 PM Saturday. She's great with lived-in color. Want it?", time: "2:15 PM" },
-      { who: "user",  text: "yes pls", time: "2:16 PM" },
-      { who: "agent", text: "Name + email for the confirmation?", time: "2:16 PM" },
-      { who: "user",  text: "maya chen, maya.chen@gmail.com", time: "2:17 PM" },
-      { who: "agent", text: "You're in. Confirmation on the way.", time: "2:17 PM",
+      { who: "agent", text: "Hi, welcome to Cedar & Bloom — happy to help. What are you thinking about?", time: "2:14 PM" },
+      { who: "user",  text: "Hi! I'd love to do a balayage on my dark hair. Any idea how much that runs?", time: "2:14 PM" },
+      { who: "agent", text: "Lovely choice. On darker hair, balayage starts at $245 and takes about 3–4 hours, including a gloss.", time: "2:15 PM" },
+      { who: "user",  text: "Got it. Is there anything available Saturday?", time: "2:15 PM" },
+      { who: "agent", text: "Marisol has 1:30 PM open on Saturday — she's wonderful with lived-in color. Would you like me to hold it?", time: "2:15 PM" },
+      { who: "user",  text: "Yes, please.", time: "2:16 PM" },
+      { who: "agent", text: "Of course. Could I have a name and email for the confirmation?", time: "2:16 PM" },
+      { who: "user",  text: "Maya Chen, maya.chen@gmail.com", time: "2:17 PM" },
+      { who: "agent", text: "Wonderful, Maya — you're all set. Confirmation is on its way.", time: "2:17 PM",
         booked: { pill: "Held", line: "Sat · 1:30 PM · Marisol · Maya Chen" } }
     ]
   },
@@ -2863,17 +2891,17 @@ const INDUSTRIES = {
       "Routes injury &amp; scaling questions to coaches"
     ],
     messages: [
-      { who: "agent", text: "Hey — Limestone CF here. Trying CrossFit for the first time, or dropping in?", time: "10:42 AM" },
-      { who: "user",  text: "first time, no clue what i'm doing tbh", time: "10:42 AM" },
-      { who: "agent", text: "All good. New folks start with On-Ramp — a 60-min intro to the basic movements. First one's free.", time: "10:43 AM" },
-      { who: "user",  text: "ok cool, anything this week?", time: "10:43 AM" },
-      { who: "agent", text: "Tue 6 PM or Sat 9 AM. Which works?", time: "10:43 AM" },
-      { who: "user",  text: "sat", time: "10:44 AM" },
-      { who: "agent", text: "Book you in for Sat 9 AM?", time: "10:44 AM" },
-      { who: "user",  text: "yes pls", time: "10:44 AM" },
-      { who: "agent", text: "Name + number for the text confirm?", time: "10:45 AM" },
-      { who: "user",  text: "alex rivera, (512) 555-0188", time: "10:45 AM" },
-      { who: "agent", text: "All set. Wear athletic clothes — coach will run you through the basics.", time: "10:45 AM",
+      { who: "agent", text: "Welcome to Limestone CF! 💪 Trying CrossFit for the first time, or dropping in?", time: "10:42 AM" },
+      { who: "user",  text: "First time! Honestly a little nervous haha", time: "10:42 AM" },
+      { who: "agent", text: "You're going to crush it. Everyone starts somewhere. New athletes begin with our On-Ramp — a 60-min intro to the basic movements. First one's on us!", time: "10:43 AM" },
+      { who: "user",  text: "Awesome. What's available this week?", time: "10:43 AM" },
+      { who: "agent", text: "Got two spots: Tue 6 PM or Sat 9 AM. Pick your battle!", time: "10:43 AM" },
+      { who: "user",  text: "Saturday", time: "10:44 AM" },
+      { who: "agent", text: "Let's get you locked in for Sat 9 AM. Sound good?", time: "10:44 AM" },
+      { who: "user",  text: "Yes!", time: "10:44 AM" },
+      { who: "agent", text: "Name and number for the day-of text?", time: "10:45 AM" },
+      { who: "user",  text: "Alex Rivera, (512) 555-0188", time: "10:45 AM" },
+      { who: "agent", text: "You're in, Alex! 🔥 Wear athletic clothes, bring water. Coach will walk you through everything — see you Saturday!", time: "10:45 AM",
         booked: { pill: "Booked", line: "Sat · 9:00 AM · On-Ramp · Alex Rivera" } }
     ]
   },
@@ -2888,17 +2916,17 @@ const INDUSTRIES = {
       "Routes special-request jobs to the owner"
     ],
     messages: [
-      { who: "agent", text: "Hi — Bright & Tidy here. What can I help with?", time: "9:18 AM" },
-      { who: "user",  text: "do you do biweekly cleans for a 2 bed?", time: "9:18 AM" },
-      { who: "agent", text: "We do. A 2bd/2ba biweekly usually runs $135–160. About 2 hours.", time: "9:19 AM" },
-      { who: "user",  text: "ok cool. anything next thursday?", time: "9:19 AM" },
-      { who: "agent", text: "Thursday I have 9 AM or 1 PM open. Which works better?", time: "9:20 AM" },
-      { who: "user",  text: "9 if possible", time: "9:20 AM" },
-      { who: "agent", text: "Got it. Zip + a name for the booking?", time: "9:20 AM" },
-      { who: "user",  text: "78745, jess kim", time: "9:21 AM" },
-      { who: "agent", text: "And a number for the day-of text?", time: "9:21 AM" },
+      { who: "agent", text: "Hi there, Bright & Tidy here. How can I help today?", time: "9:18 AM" },
+      { who: "user",  text: "Hi, I'm interested in biweekly cleans for a 2-bedroom. What does that cost?", time: "9:18 AM" },
+      { who: "agent", text: "Happy to help. A 2bd/2ba biweekly clean runs $135–160 and takes about 2 hours.", time: "9:19 AM" },
+      { who: "user",  text: "Great. Do you have anything next Thursday?", time: "9:19 AM" },
+      { who: "agent", text: "Yes — Thursday I have 9 AM or 1 PM open. Which would you prefer?", time: "9:20 AM" },
+      { who: "user",  text: "9 AM would be ideal.", time: "9:20 AM" },
+      { who: "agent", text: "Perfect. Could I have your zip code and a name for the booking?", time: "9:20 AM" },
+      { who: "user",  text: "78745, Jess Kim", time: "9:21 AM" },
+      { who: "agent", text: "And a phone number for the day-of text reminder?", time: "9:21 AM" },
       { who: "user",  text: "(512) 555-0344", time: "9:21 AM" },
-      { who: "agent", text: "You're booked. We'll text the morning of.", time: "9:22 AM",
+      { who: "agent", text: "You're all booked, Jess. We'll text you the morning of with an arrival window.", time: "9:22 AM",
         booked: { pill: "Booked", line: "Thu · 9:00 AM · Biweekly clean · Jess Kim" } }
     ]
   },
@@ -2913,15 +2941,15 @@ const INDUSTRIES = {
       "Quotes recurring plans without the hard sell"
     ],
     messages: [
-      { who: "agent", text: "Hi — Hill Country Pool. What's going on?", time: "7:08 AM" },
-      { who: "user",  text: "pool turned green overnight. filter sounds normal tho", time: "7:08 AM" },
-      { who: "agent", text: "Sounds like algae — common in this heat. Zip + a photo if you can?", time: "7:09 AM" },
-      { who: "user",  text: "78704, photo attached", time: "7:09 AM" },
-      { who: "agent", text: "You're in our area. I can hold 2–4 PM today — $89 trip + chemicals.", time: "7:10 AM" },
-      { who: "user",  text: "ok do it", time: "7:10 AM" },
-      { who: "agent", text: "Name + best number?", time: "7:10 AM" },
-      { who: "user",  text: "jordan mills, (512) 555-0263", time: "7:11 AM" },
-      { who: "agent", text: "Scheduled. Tech will text 20 min before they get there.", time: "7:11 AM",
+      { who: "agent", text: "Hill Country Pool. What's going on with your pool?", time: "7:08 AM" },
+      { who: "user",  text: "Woke up and the water's bright green. Filter seems to be running fine.", time: "7:08 AM" },
+      { who: "agent", text: "Sounds like an algae bloom — common with these temps. What's your zip, and can you send a photo?", time: "7:09 AM" },
+      { who: "user",  text: "78704. Photo attached.", time: "7:09 AM" },
+      { who: "agent", text: "You're in our service area. I can dispatch a tech today, 2–4 PM window. $89 trip fee plus chemicals as needed.", time: "7:10 AM" },
+      { who: "user",  text: "Please do.", time: "7:10 AM" },
+      { who: "agent", text: "Need a name and best contact number.", time: "7:10 AM" },
+      { who: "user",  text: "Jordan Mills, (512) 555-0263", time: "7:11 AM" },
+      { who: "agent", text: "Scheduled. Your tech will text 20 minutes before arrival.", time: "7:11 AM",
         booked: { pill: "Scheduled", line: "Today · 2–4 PM · Same-day service · Jordan Mills" } }
     ]
   },
@@ -2936,15 +2964,15 @@ const INDUSTRIES = {
       "Pings your phone for emergency repairs"
     ],
     messages: [
-      { who: "agent", text: "Hi — Mesa Build. What kind of project?", time: "8:55 AM" },
-      { who: "user",  text: "full kitchen remodel, hoping for a late summer start", time: "8:55 AM" },
-      { who: "agent", text: "Good fit. Zip + are you moving anything (island, walls)?", time: "8:56 AM" },
-      { who: "user",  text: "78704, moving the island", time: "8:56 AM" },
-      { who: "agent", text: "Sam does those in your area. He's open Wed 4 PM for an on-site. Want it?", time: "8:57 AM" },
-      { who: "user",  text: "yes pls", time: "8:57 AM" },
-      { who: "agent", text: "Name + number for the day-of?", time: "8:57 AM" },
-      { who: "user",  text: "devon brooks, (512) 555-0421", time: "8:58 AM" },
-      { who: "agent", text: "Held. Sam will text to confirm the address.", time: "8:58 AM",
+      { who: "agent", text: "Mesa Build — thanks for reaching out. What's the project?", time: "8:55 AM" },
+      { who: "user",  text: "Full kitchen remodel. Looking at a late summer start if possible.", time: "8:55 AM" },
+      { who: "agent", text: "Good timing. What's the zip, and is the layout staying the same or are you relocating anything (island, walls, plumbing)?", time: "8:56 AM" },
+      { who: "user",  text: "78704. Moving the island and opening up the wall to the dining room.", time: "8:56 AM" },
+      { who: "agent", text: "That's right in Sam's wheelhouse — he leads our full-layout remodels in central Austin. He has Wed at 4 PM open for an on-site walkthrough.", time: "8:57 AM" },
+      { who: "user",  text: "That works for me.", time: "8:57 AM" },
+      { who: "agent", text: "Could I get a name and number for the day-of confirmation?", time: "8:57 AM" },
+      { who: "user",  text: "Devon Brooks, (512) 555-0421", time: "8:58 AM" },
+      { who: "agent", text: "Booked, Devon. Sam will text you Wednesday morning to confirm the address.", time: "8:58 AM",
         booked: { pill: "Held", line: "Wed · 4:00 PM · On-site estimate · Devon Brooks" } }
     ]
   }
