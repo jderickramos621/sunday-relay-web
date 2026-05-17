@@ -180,7 +180,7 @@
     color: var(--navy);
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 6px;
   }
   .brand .mark {
     width: 18px; height: 18px;
@@ -246,9 +246,7 @@
     top: 72px;
     left: 0;
     right: 0;
-    background: rgba(243, 244, 243, 0.92);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    background: var(--bg);
     border-bottom: 1px solid var(--border);
     z-index: 49;
     transform: translateY(-12px);
@@ -314,7 +312,7 @@
   @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; gap: 56px; } }
 
   .hero h1 { margin-top: 14px; }
-  .hero .lede { margin-top: 22px; max-width: 460px; }
+  .hero .lede { margin-top: 22px; max-width: 580px; }
   .hero .cta-row { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
   .hero .hero-facts {
     margin-top: 28px;
@@ -787,14 +785,45 @@
     background: transparent;
   }
 
-  .who-head {
+  /* Shared section header layout — Industries, Before/After, Handoff,
+     Integrations all use the same grid so the eyebrow/headline/lede land
+     in identical positions section-to-section. */
+  .who-head,
+  .ba-head,
+  .handoff-head,
+  .int-head {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     gap: 64px;
     align-items: end;
+    margin-bottom: 48px;
   }
-  @media (max-width: 880px) { .who-head { grid-template-columns: 1fr; gap: 24px; } }
-  .who-head .lede { max-width: 540px; }
+  .who-head h2,
+  .ba-head h2,
+  .handoff-head h2,
+  .int-head h2 { margin-top: 12px; }
+  .who-head .lede,
+  .ba-head .lede,
+  .handoff-head .lede,
+  .int-head .lede {
+    max-width: 480px;
+    color: var(--text);
+  }
+  @media (max-width: 880px) {
+    .who-head,
+    .ba-head,
+    .handoff-head,
+    .int-head {
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 36px;
+      align-items: start;
+    }
+  }
+
+  .who-head {
+    /* anchor (kept for any specificity overrides) */
+  }
 
   /* ─────────── Pricing strip ─────────── */
   .cost-section {
@@ -867,6 +896,239 @@
     color: #2D4F5A;
     letter-spacing: 0.04em;
     opacity: 0.85;
+  }
+
+  /* ─────────── Pricing tiers ───────────
+     Three-tier component on the blue accent band. Calm, structured, editorial.
+     Cards sit on the page bg (--bg) so they read as paper on the blue ground;
+     no gradients, no glow, no "most popular!!!" startup styling. */
+  .pricing-head {
+    max-width: 720px;
+    margin: 0 auto 56px;
+    text-align: center;
+  }
+  .pricing-head h2 { margin-top: 12px; }
+  .pricing-head .italic-accent {
+    display: block;
+    margin-top: 14px;
+    font-size: 20px;
+  }
+  .pricing-head .lede {
+    margin-top: 18px;
+    color: #1F3B47;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+  @media (max-width: 980px) {
+    .pricing-grid { grid-template-columns: 1fr; gap: 14px; }
+  }
+
+  .price-card {
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 36px 30px 32px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .price-card:hover {
+    border-color: var(--navy);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px -28px rgba(25, 65, 82, 0.32);
+  }
+  .price-card.is-featured {
+    border-color: var(--navy);
+    border-width: 1.5px;
+  }
+
+  .featured-pill {
+    position: absolute;
+    top: -11px;
+    left: 28px;
+    background: var(--navy);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 3px;
+  }
+
+  .price-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .price-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 6px;
+    color: var(--navy);
+    font-family: var(--display);
+  }
+  .price-amount .amount {
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .price-amount .period {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .price-setup {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .price-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0 0 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .price-features,
+  .price-features-extra {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .price-features li,
+  .price-features-extra li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .price-features li::before,
+  .price-features-extra li::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23194152' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  .price-features-extra {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, margin-top 0.3s ease, padding-top 0.3s ease;
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .price-card.is-expanded .price-features-extra {
+    max-height: 480px;
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top: 1px dashed var(--border-strong);
+  }
+
+  .price-toggle {
+    margin-top: 18px;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    color: var(--navy);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    text-align: left;
+    align-self: flex-start;
+    border-bottom: 1px solid currentColor;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+  .price-toggle:hover { color: var(--terracotta); }
+
+  .price-fit {
+    margin-top: auto;
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+    font-family: var(--sans);
+    font-style: normal;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    display: block;
+  }
+  .price-card.is-expanded .price-fit { margin-top: 26px; }
+  .price-card:not(.is-expanded) .price-fit { margin-top: 32px; }
+
+  /* Reassurance row below the cards. Single line on desktop, wraps on mobile. */
+  .pricing-reassurance {
+    margin-top: 60px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(25, 65, 82, 0.14);
+    text-align: center;
+  }
+  .pricing-reassurance-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px 32px;
+  }
+  .pricing-reassurance-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .pricing-reassurance-list li::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23BA5934' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+  .pricing-launch-line {
+    margin: 24px auto 0;
+    max-width: 580px;
+    font-size: 13.5px;
+    color: #2D4F5A;
+    line-height: 1.55;
+    font-style: italic;
+    font-family: var(--serif-italic);
+    font-weight: 400;
   }
 
   /* ─────────── FAQ ─────────── */
@@ -1035,6 +1297,12 @@
   }
   .footer-bottom .austin { display: inline-flex; align-items: center; gap: 6px; }
   .footer-bottom .austin .star { color: var(--mustard); }
+
+  /* Footer bottom stacks earlier than its container row — the three small
+     items can't share a horizontal line cleanly below ~880px. */
+  @media (max-width: 880px) {
+    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
 
   /* ─────────── Sunni drawer ─────────── */
   .sunni-overlay {
@@ -1218,7 +1486,7 @@
     .ind-tab { padding: 11px 13px; font-size: 13px; }
     .demo-side { padding: 22px 22px 24px; }
     .footer-grid { padding-top: 56px; padding-bottom: 28px; gap: 32px; }
-    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .footer-bottom { gap: 8px; }
   }
 
   @media (max-width: 480px) {
@@ -1236,7 +1504,6 @@
   .core-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    margin-top: 44px;
     border-top: 1px solid var(--border-strong);
     border-left: 1px solid var(--border-strong);
   }
@@ -1356,15 +1623,8 @@
     border-bottom: 1px solid var(--border);
   }
   .ba-head {
-    display: grid;
-    grid-template-columns: 0.7fr 1.3fr;
-    gap: 64px;
-    align-items: end;
-    margin-bottom: 48px;
+    /* layout in shared section-head rule */
   }
-  @media (max-width: 880px) { .ba-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; } }
-  .ba-head h2 { margin-top: 12px; }
-  .ba-head .lede { max-width: 460px; color: var(--text); }
 
   .ba-grid {
     display: grid;
@@ -1446,15 +1706,8 @@
     border-bottom: 1px solid var(--border);
   }
   .int-head {
-    display: grid;
-    grid-template-columns: 0.7fr 1.3fr;
-    gap: 64px;
-    align-items: end;
-    margin-bottom: 48px;
+    /* layout in shared section-head rule */
   }
-  @media (max-width: 880px) { .int-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; } }
-  .int-head h2 { margin-top: 12px; }
-  .int-head .lede { max-width: 480px; color: var(--text); }
 
   .int-grid {
     display: grid;
@@ -1532,23 +1785,15 @@
      it reads as a continuation of How It Works, not a new visual idea. */
   .handoff-section { padding: 96px 0; }
   .handoff-head {
-    display: grid;
-    grid-template-columns: 0.7fr 1.3fr;
-    gap: 64px;
-    align-items: end;
-    margin-bottom: 48px;
+    /* layout in shared section-head rule */
   }
-  @media (max-width: 880px) {
-    .handoff-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; }
-  }
-  .handoff-head h2 { margin-top: 12px; }
-  .handoff-head .lede { max-width: 480px; color: var(--text); }
 
   /* Shared close-line for sections ending in a single pull statement.
      Used by Handoff and Pricing. Sits a touch smaller than an h2 so it reads
      as a closing thought, not another headline. */
   .handoff-close,
-  .cost-close {
+  .cost-close,
+  .ba-close {
     margin: 48px auto 0;
     max-width: 720px;
     text-align: center;
@@ -1560,7 +1805,8 @@
     color: var(--navy);
   }
   .handoff-close em,
-  .cost-close em {
+  .cost-close em,
+  .ba-close em {
     font-family: var(--serif-italic);
     font-style: italic;
     font-weight: 400;
@@ -1642,7 +1888,7 @@
 <!-- ─────────── HEADER ─────────── -->
 <header class="site">
   <div class="wrap nav">
-    <a href="#" class="brand" style="font-size: 24px;">SUNDAY <span class="accent">RELAY</span></a>
+    <a href="#" class="brand" style="font-size: 24px;">SUNDAY<span class="accent">RELAY</span></a>
       <nav class="nav-links">
         <a href="#how" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">How it works</a>
         <a href="#demo" style="font-family: 'Barlow Semi Condensed'; font-weight: 500; font-size: 16px">Demo</a>
@@ -1677,16 +1923,16 @@
     <div>
       <span class="eyebrow">AI agents for small businesses</span>
       <h1>Your website should do more than sit there.</h1>
-      <p class="lede">Sunday Relay builds AI agents that answer questions, book appointments, and help customers help themselves — quietly, on your domain, in your voice.</p>
+      <p class="lede">Sunday Relay builds AI agents that answer questions, book appointments, and help customers help themselves. </p>
       <div class="cta-row">
         <a href="#" class="btn btn-primary">Book a consult</a>
         <a href="#how" class="btn btn-secondary" style="border-color: rgb(25, 65, 82); color: rgb(25, 65, 82)">See how it works</a>
       </div>
       <div class="hero-facts">
         <span>Live in three weeks</span>
-        <span class="dot"></span>
+        <span class="dot" style="color: rgb(186, 89, 52); background-color: rgb(197, 154, 61)"></span>
         <span>Cancel any month</span>
-        <span class="dot"></span>
+        <span class="dot" style="background-color: rgb(197, 154, 61)"></span>
         <span>No usage charges</span>
       </div>
     </div>
@@ -1697,7 +1943,7 @@
         <div class="chat-head">
           <span class="live-pill"><span class="pulse"></span> LIVE</span>
           <span class="channel">Website chat</span>
-          <span class="site-name">Paragon Jiu-Jitsu</span>
+          <span class="site-name">Flamingo Jiu-Jitsu</span>
           <button class="close" aria-label="Close">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
@@ -1721,8 +1967,8 @@
 <section class="features">
   <div class="wrap features-grid">
     <div class="feature">
-      <div class="icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <div class="icon" style="border-color: rgb(25, 65, 82)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="stroke: rgb(25, 65, 82)"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </div>
       <div>
         <h4 style="font-family: 'Barlow Semi Condensed'; font-weight: 800; font-size: 16px;">Answers your customers</h4>
@@ -1765,9 +2011,9 @@
     <div class="who-head">
       <div>
         <span class="eyebrow">Who it's for</span>
-        <h2>Where it fits best.</h2>
+        <h2>Who we build for.</h2>
       </div>
-      <p class="lede">Service businesses where appointments are the product, the calendar is shared, and the front desk wears five hats.</p>
+      <p class="lede">If your business has a website, a calendar, and more questions than time — you're who we built this for.</p>
     </div>
 
     <div class="core-grid">
@@ -1826,7 +2072,7 @@
         <span class="eyebrow">Before &amp; after</span>
         <h2>What changes<br/>day-to-day.</h2>
       </div>
-      <p class="lede">No miracles. Just a few of the inbox tasks that quietly used to eat the day, handled before anyone notices.</p>
+      <p class="lede">The same week, with an agent and without.</p>
     </div>
 
     <div class="ba-grid">
@@ -1849,6 +2095,8 @@
         </ul>
       </div>
     </div>
+
+    <p class="ba-close">The goal isn't to replace your staff <em>— it's to protect their time.</em></p>
   </div>
 </section>
 
@@ -1858,7 +2106,6 @@
     <div>
       <span class="eyebrow">How it works</span>
       <h2>What onboarding looks like</h2>
-      <span class="italic-accent">We make automation feel easy.</span>
     </div>
     <div>
       <div class="steps">
@@ -1893,7 +2140,6 @@
         <span class="eyebrow">See it in action</span>
         <h2>Pick an industry.<br/>Watch an agent at work.</h2>
       </div>
-      <p class="meta">Each demo below uses a real transcript pattern from a Sunday Relay deployment. Calendar bookings are simulated.</p>
     </div>
 
     <div class="industry-tabs" id="industryTabs">
@@ -1974,10 +2220,10 @@
   <div class="wrap">
     <div class="handoff-head">
       <div>
-        <span class="eyebrow">Handoff</span>
-        <h2>When a human<br/>needs to step in.</h2>
+        <span class="eyebrow">When the agent can't answer</span>
+        <h2>Some questions<br/>need a person.</h2>
       </div>
-      <p class="lede">Some questions need a person. When the agent isn't confident, it doesn't guess — it takes a clean message and gets it to the right hands.</p>
+      <p class="lede">When the agent isn't confident, it doesn't guess — it takes a clean message and gets it to the right hands.</p>
     </div>
 
     <div class="handoff-grid">
@@ -2010,8 +2256,6 @@
         <p>Sets the expectation (“someone will reach out by tomorrow”) and logs it so it doesn't slip.</p>
       </div>
     </div>
-
-    <p class="handoff-close">The goal isn't to replace your staff <em>— it's to protect their time.</em></p>
   </div>
 </section>
 
@@ -2071,39 +2315,114 @@
       </div>
     </div>
 
-    <p class="int-foot">Don't see yours? <strong>We've built integrations in about a week.</strong> If your stack has an API, we can probably talk to it.</p>
+    <p class="int-foot">Don't see yours? <strong></strong> If your stack has an API, we can probably talk to it.</p>
   </div>
 </section>
 
 <!-- ─────────── PRICING / WHAT IT COSTS ─────────── -->
 <section class="section cost-section" id="pricing" data-screen-label="08 Pricing">
-  <div class="wrap cost-grid">
-    <div class="cost-head">
-      <span class="eyebrow">What it costs</span>
-      <h2>Custom pricing,<br/>sent in writing.</h2>
-      <p class="lede">Every build is scoped to your business — number of agents, systems we connect to, expected volume. We send a flat quote after the discovery call, so you know what you're paying before you sign anything.</p>
+  <div class="wrap">
+    <div class="pricing-head">
+      <span class="eyebrow" style="color: rgb(169, 76, 51)">What it costs</span>
+      <h2>Straightforward pricing.</h2>
+      <span class="italic-accent">Flat monthly pricing. No per-message fees. Cancel any month.</span>
+      <p class="lede" style="color: rgb(31, 59, 71)">Every setup is scoped to your workflow, scheduling system, and customer volume. Most businesses fit into one of the options below.</p>
     </div>
-    <div class="cost-body">
-      <div class="cost-facts">
-        <div class="cost-fact">
-          <span class="cost-label">Monthly</span>
-          <span class="cost-value">From <span class="placeholder">$XXX</span>/mo</span>
-          <span class="cost-meta">Flat fee, set after scoping. No usage tiers, no per-message charges.</span>
+
+    <div class="pricing-grid">
+      <!-- Tier 1 — Website Assistant -->
+      <div class="price-card">
+        <span class="price-label" style="font-family: &quot;Barlow Semi Condensed&quot;; font-size: 12px; font-weight: 800"><span style="color: #ba5934">Website assistant</span></span>
+        <div class="price-amount">
+          <span class="amount">$299</span>
+          <span class="period">/mo</span>
         </div>
-        <div class="cost-fact">
-          <span class="cost-label">Setup</span>
-          <span class="cost-value"><span class="placeholder">$X,XXX</span> once</span>
-          <span class="cost-meta">One-time build fee, charged when you sign off on launch.</span>
+        <span class="price-setup">$1,500 setup</span>
+        <p class="price-desc">For smaller service businesses that need lead capture, FAQs, and after-hours coverage.</p>
+        <ul class="price-features">
+          <li>FAQ handling</li>
+          <li>Lead capture</li>
+          <li>After-hours replies</li>
+          <li>Contact collection</li>
+        </ul>
+        <button type="button" class="price-toggle" aria-expanded="false">+ Full feature list</button>
+        <ul class="price-features-extra" aria-hidden="true">
+          <li>Trained on your website</li>
+          <li>Escalation to staff</li>
+          <li>Monthly tuning</li>
+          <li>Booking inquiry support</li>
+          <li>Transcript history</li>
+          <li>Ongoing support</li>
+        </ul>
+        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for photographers, cleaning companies, pet services, and pool companies.</span>
+      </div>
+
+      <!-- Tier 2 — Booking Assistant (featured) -->
+      <div class="price-card is-featured">
+        <span class="featured-pill">Most common setup</span>
+        <span class="price-label" style="color: rgb(186, 89, 52); font-size: 12px; font-family: &quot;Barlow Semi Condensed&quot;; font-weight: 800">Booking assistant</span>
+        <div class="price-amount">
+          <span class="amount">$599</span>
+          <span class="period">/mo</span>
         </div>
-        <div class="cost-fact">
-          <span class="cost-label">Cancel</span>
-          <span class="cost-value">Any month</span>
-          <span class="cost-meta">No penalty. We'll remove the script and hand you your transcripts.</span>
+        <span class="price-setup">$2,500 setup</span>
+        <p class="price-desc">Built for appointment-based businesses with heavier scheduling volume.</p>
+        <ul class="price-features">
+          <li>Booking workflows</li>
+          <li>Calendar integrations</li>
+          <li>Intake questions</li>
+          <li>Service recommendations</li>
+        </ul>
+        <button type="button" class="price-toggle" aria-expanded="false">+ Full feature list</button>
+        <ul class="price-features-extra" aria-hidden="true">
+          <li>Multi-step conversations</li>
+          <li>Appointment routing</li>
+          <li>Cancellation handling</li>
+          <li>Consultation qualification</li>
+          <li>FAQ automation</li>
+          <li>Monthly tuning + support</li>
+        </ul>
+        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for salons, med spas, gyms, and martial arts schools.</span>
+      </div>
+
+      <!-- Tier 3 — Operations Assistant -->
+      <div class="price-card">
+        <span class="price-label" style="font-size: 12px; color: rgb(186, 89, 52); font-family: &quot;Barlow Semi Condensed&quot;; font-weight: 800">Operations assistant</span>
+        <div class="price-amount">
+          <span class="amount">From $999</span>
+          <span class="period">/mo</span>
         </div>
+        <span class="price-setup">Custom setup</span>
+        <p class="price-desc">For businesses needing more advanced workflows and integrations.</p>
+        <ul class="price-features">
+          <li>Texting workflows</li>
+          <li>CRM integrations</li>
+          <li>Routing logic</li>
+          <li>Advanced automations</li>
+        </ul>
+        <button type="button" class="price-toggle" aria-expanded="false">+ Full feature list</button>
+        <ul class="price-features-extra" aria-hidden="true">
+          <li>Multi-location support</li>
+          <li>Phone assistant workflows</li>
+          <li>Custom intake systems</li>
+          <li>Lead distribution</li>
+          <li>Advanced escalation logic</li>
+          <li>Operational automations</li>
+        </ul>
+        <span class="price-fit" style="font-family: &quot;DM Sans&quot;; font-size: 12px">Best for larger home service businesses and multi-location operators.</span>
       </div>
     </div>
 
-    <p class="cost-close">No usage surprises <em>— no per-message charges.</em></p>
+    <div class="pricing-reassurance">
+      <ul class="pricing-reassurance-list">
+        <li>Flat monthly pricing</li>
+        <li>No per-message charges</li>
+        <li>Human escalation flows</li>
+        <li>Ongoing tuning included</li>
+        <li>Cancel any month</li>
+      </ul>
+      <p class="pricing-launch-line">Most businesses launch in 2–3 weeks using their existing website and scheduling tools.</p>
+    </div>
   </div>
 </section>
 
@@ -2149,7 +2468,7 @@
 <footer class="site">
   <div class="wrap footer-grid">
     <div class="brand-block">
-      <a href="#" class="brand">SUNDAY <span class="accent" style="color: rgb(255, 255, 255);">RELAY</span></a>
+      <a href="#" class="brand">SUNDAY<span class="accent" style="color: rgb(255, 255, 255);">RELAY</span></a>
       <p>AI agents for small businesses. Built in Austin, deployed on your own domain.</p>
     </div>
     <div>
@@ -2250,8 +2569,9 @@ function escapeHTML(str) {
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 /* ─────────── Dynamic chat player ─────────── */
-function createChatPlayer(body, input) {
+function createChatPlayer(body, input, opts = {}) {
   let token = 0;
+  const agentLabel = opts.agentLabel || "SUNDAY RELAY";
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
 
@@ -2268,7 +2588,7 @@ function createChatPlayer(body, input) {
     const el = document.createElement("div");
     el.className = `msg ${msg.who}`;
     el.innerHTML = `
-      <span class="label">${msg.who === "agent" ? "SUNDAY RELAY" : "VISITOR"}</span>
+      <span class="label">${msg.who === "agent" ? agentLabel : "VISITOR"}</span>
       ${escapeHTML(msg.text)}
       ${msg.booked ? `<div class="booked"><span class="pill" style="background-color: rgb(174, 199, 208);">${escapeHTML(msg.booked.pill)}</span><span>${escapeHTML(msg.booked.line)}</span></div>` : ""}
       <span class="time">${escapeHTML(msg.time)}</span>
@@ -2351,7 +2671,7 @@ function createChatPlayer(body, input) {
   if (!body) return;
 
   const HERO_SCRIPT = [
-    { who: "agent", text: "Hey — welcome to Paragon. Ask about classes, schedules, or your first free trial.", time: "10:42 AM" },
+    { who: "agent", text: "Hey — welcome to Flamingo. Ask about classes, schedules, or your first free trial.", time: "10:42 AM" },
     { who: "user",  text: "Does this gym have free trial classes?", time: "10:42 AM" },
     { who: "agent", text: "We do. Every new student gets one free week. Want me to put you on the list for your first class?", time: "10:43 AM" },
     { who: "user",  text: "Sure — how about Thursday?", time: "10:43 AM" },
@@ -2367,7 +2687,7 @@ function createChatPlayer(body, input) {
       booked: { pill: "Booked", line: "Thu · 6:45 PM · Fundamentals · Alex Rivera" } }
   ];
 
-  const player = createChatPlayer(body, input);
+  const player = createChatPlayer(body, input, { agentLabel: "FLAMINGO JJ" });
 
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((entries) => {
@@ -2533,26 +2853,28 @@ const INDUSTRIES = {
     ]
   },
   gym: {
-    site: "Paragon Jiu-Jitsu",
-    label: "Paragon JJ",
-    headline: "Books trial classes 24/7.",
-    blurb: "Gym agents answer schedule and pricing questions, then place real bodies in real beginner classes — even at midnight.",
+    site: "Limestone CrossFit",
+    label: "Limestone CF",
+    headline: "Books on-ramps and drop-ins.",
+    blurb: "CrossFit agents answer schedule and pricing questions, then put first-timers on the on-ramp calendar and verified members in drop-in classes — even at midnight.",
     bullets: [
-      "Free trial bookings on your real schedule",
+      "On-ramp + drop-in bookings on your real schedule",
       "Membership tier explainers, no upsell pressure",
-      "Routes injury & medical questions to staff"
+      "Routes injury &amp; scaling questions to coaches"
     ],
     messages: [
-      { who: "agent", text: "Hey — welcome to Paragon. Looking for a class or a free trial?", time: "10:42 AM" },
-      { who: "user",  text: "totally new, any beginner classes this week?", time: "10:42 AM" },
-      { who: "agent", text: "Yeah — Fundamentals runs Tue/Thu 6:45 PM and Sat 10 AM. First week's free.", time: "10:43 AM" },
-      { who: "user",  text: "thurs works", time: "10:43 AM" },
-      { who: "agent", text: "Book you in for Thursday 6:45?", time: "10:43 AM" },
+      { who: "agent", text: "Hey — Limestone CF here. Trying CrossFit for the first time, or dropping in?", time: "10:42 AM" },
+      { who: "user",  text: "first time, no clue what i'm doing tbh", time: "10:42 AM" },
+      { who: "agent", text: "All good. New folks start with On-Ramp — a 60-min intro to the basic movements. First one's free.", time: "10:43 AM" },
+      { who: "user",  text: "ok cool, anything this week?", time: "10:43 AM" },
+      { who: "agent", text: "Tue 6 PM or Sat 9 AM. Which works?", time: "10:43 AM" },
+      { who: "user",  text: "sat", time: "10:44 AM" },
+      { who: "agent", text: "Book you in for Sat 9 AM?", time: "10:44 AM" },
       { who: "user",  text: "yes pls", time: "10:44 AM" },
-      { who: "agent", text: "Name + number for the text confirm?", time: "10:44 AM" },
+      { who: "agent", text: "Name + number for the text confirm?", time: "10:45 AM" },
       { who: "user",  text: "alex rivera, (512) 555-0188", time: "10:45 AM" },
-      { who: "agent", text: "All set. Wear loose clothes — we'll loan you a gi.", time: "10:45 AM",
-        booked: { pill: "Booked", line: "Thu · 6:45 PM · Fundamentals · Alex Rivera" } }
+      { who: "agent", text: "All set. Wear athletic clothes — coach will run you through the basics.", time: "10:45 AM",
+        booked: { pill: "Booked", line: "Sat · 9:00 AM · On-Ramp · Alex Rivera" } }
     ]
   },
   cleaning: {
@@ -2656,9 +2978,10 @@ function renderIndustry(key) {
   `;
 
   // Static transcript render — full conversation visible at once
+  const demoAgentLabel = data.label.toUpperCase();
   demoChatBody.innerHTML = data.messages.map(msg => `
     <div class="msg ${msg.who}">
-      <span class="label">${msg.who === "agent" ? "SUNDAY RELAY" : "VISITOR"}</span>
+      <span class="label">${msg.who === "agent" ? demoAgentLabel : "VISITOR"}</span>
       ${escapeHTML(msg.text)}
       ${msg.booked ? `<div class="booked"><span class="pill" style="background-color: rgb(174, 199, 208);">${escapeHTML(msg.booked.pill)}</span><span>${escapeHTML(msg.booked.line)}</span></div>` : ""}
       <span class="time">${escapeHTML(msg.time)}</span>
@@ -2739,7 +3062,25 @@ FAQS.forEach((f, i) => {
     requestAnimationFrame(() => { ans.style.maxHeight = ans.scrollHeight + "px"; });
   }
 });
+
+/* ─────────── Pricing card expand toggle ───────────
+   Click to reveal additional features. Toggles a class on the card; CSS
+   handles the max-height transition. Aria-expanded kept in sync. */
+document.querySelectorAll(".price-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const card = btn.closest(".price-card");
+    if (!card) return;
+    const isOpen = card.classList.toggle("is-expanded");
+    btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    btn.textContent = isOpen ? "− Hide details" : "+ Full feature list";
+    const extra = card.querySelector(".price-features-extra");
+    if (extra) extra.setAttribute("aria-hidden", isOpen ? "false" : "true");
+  });
+});
 </script>
 
 </body>
 </html>
+<style id="__om-edit-overrides">
+#industries .lede >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) { color: rgb(25, 65, 82) !important }
+</style>
