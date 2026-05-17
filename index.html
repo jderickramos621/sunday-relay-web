@@ -2488,7 +2488,7 @@ function createChatPlayer(body, input) {
   try {
     const API_URL = window.location.hostname === 'localhost'
       ? 'http://localhost:4000'
-      : 'https://sunday-relay-production.up.railway.app';
+      : 'https://api.sundayrelay.com';
     const res = await fetch(`${API_URL}/chat/sunday-relay`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
