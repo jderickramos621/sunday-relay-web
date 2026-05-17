@@ -1353,40 +1353,52 @@
 
   @media (max-width: 720px) {
     .sunni-drawer {
-      top: auto;
+      /* Anchor to top so the bottom edge naturally follows the visual
+         viewport up when the keyboard opens — no gap below the drawer
+         where the page can show through or scroll. */
+      top: 0;
       right: 0;
       left: 0;
-      bottom: 0;
+      bottom: auto;
       width: 100%;
-      /* Use dvh where supported so iOS Safari's chrome-visible viewport
-         doesn't leave the drawer's edge peeking above the bottom bar.
-         Belt and suspenders: translateY(105%) gives a sub-pixel buffer,
-         and visibility:hidden (handled on the base rule above) ensures
-         it isn't painted at all when closed. */
-      height: 88vh;
-      height: 88dvh;
-      border-left: none;
-      border-top: 1px solid var(--border);
-      border-radius: 16px 16px 0 0;
-      transform: translateY(105%);
-    }
-    /* When OPEN on mobile, fill the full visual viewport. Otherwise the
-       88dvh height shrinks when the keyboard opens, exposing the page
-       below the drawer between its bottom edge and the keyboard top. */
-    body.sunni-open .sunni-drawer {
-      transform: translateY(0);
       height: 100vh;
       height: 100dvh;
+      border-left: none;
+      border-top: none;
       border-radius: 0;
+      transform: translateY(100%);
+    }
+    body.sunni-open .sunni-drawer {
+      transform: translateY(0);
     }
     .sunni-grab {
       display: block;
+      position: relative;
+      width: 100%;
+      height: 24px;
+      margin: 0;
+      background: transparent;
+      border-radius: 0;
+      cursor: grab;
+      touch-action: none;
+      flex-shrink: 0;
+    }
+    .sunni-grab::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 38px;
       height: 4px;
       border-radius: 2px;
       background: var(--border-strong);
-      margin: 10px auto 0;
+      transition: background 0.18s ease;
     }
+    .sunni-drawer.is-dragging .sunni-grab::before { background: var(--navy); }
+    /* Disable the slide-in transition while a drag is active so the
+       drawer position tracks the finger 1:1. */
+    .sunni-drawer.is-dragging { transition: none; }
   }
 
   .sunni-head {
@@ -2796,6 +2808,16 @@ function createChatPlayer(body, input, opts = {}) {
   function open() {
     if (isOpen) return;
     isOpen = true;
+    /* Lock background scroll. iOS Safari otherwise lets the page scroll
+       underneath a fixed-position modal, which is what was making the
+       hero/demo content show through (and scroll!) beneath the drawer. */
+    const scrollY = window.scrollY;
+    document.body.dataset.scrollY = String(scrollY);
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
     document.body.classList.add("sunni-open");
     drawer.setAttribute("aria-hidden", "false");
     overlay.setAttribute("aria-hidden", "false");
@@ -2806,9 +2828,18 @@ function createChatPlayer(body, input, opts = {}) {
   function close() {
     if (!isOpen) return;
     isOpen = false;
+    /* Restore scroll position. */
+    const stored = parseInt(document.body.dataset.scrollY || "0", 10);
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    delete document.body.dataset.scrollY;
     document.body.classList.remove("sunni-open");
     drawer.setAttribute("aria-hidden", "true");
     overlay.setAttribute("aria-hidden", "true");
+    if (!Number.isNaN(stored)) window.scrollTo(0, stored);
   }
 
   // Open triggers — any element with [data-open-sunni]
@@ -2825,6 +2856,60 @@ function createChatPlayer(body, input, opts = {}) {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) close();
   });
+
+  /* ─────────── Swipe-to-dismiss on the grab handle (mobile) ───────────
+     Tap the bar at the top of the drawer and drag down to close. Only the
+     bar is draggable — the chat itself stays a normal scroll surface.
+     Threshold: close if dragged past 80px OR released with velocity > 0.6px/ms
+     downward. Otherwise snap back. */
+  (function() {
+    const grab = drawer.querySelector(".sunni-grab");
+    if (!grab) return;
+    let dragging = false;
+    let startY = 0;
+    let lastY = 0;
+    let lastT = 0;
+    let velocity = 0;
+
+    grab.addEventListener("pointerdown", (e) => {
+      if (!isOpen) return;
+      dragging = true;
+      startY = e.clientY;
+      lastY = e.clientY;
+      lastT = performance.now();
+      velocity = 0;
+      drawer.classList.add("is-dragging");
+      try { grab.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    grab.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dy = e.clientY - startY;
+      const t = performance.now();
+      if (t > lastT) velocity = (e.clientY - lastY) / (t - lastT);
+      lastY = e.clientY;
+      lastT = t;
+      /* Only allow downward drag; clamp upward at 0 so a misfire doesn't
+         pull the drawer above its top edge. */
+      drawer.style.transform = `translateY(${Math.max(0, dy)}px)`;
+    });
+
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      drawer.classList.remove("is-dragging");
+      try { grab.releasePointerCapture(e.pointerId); } catch (_) {}
+      const dy = e.clientY - startY;
+      const shouldClose = dy > 80 || (dy > 20 && velocity > 0.6);
+      /* Clear the inline transform so the CSS rule takes over again.
+         When closing, close() will re-apply translateY(100%) via the
+         body class change; when staying open, drawer snaps back to 0. */
+      drawer.style.transform = "";
+      if (shouldClose) close();
+    }
+    grab.addEventListener("pointerup", endDrag);
+    grab.addEventListener("pointercancel", endDrag);
+  })();
 
   form.addEventListener("submit", async (e) => {
   e.preventDefault();
