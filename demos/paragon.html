@@ -43,6 +43,23 @@
     var origOpen = window.open;
     window.open = function () { return null; };
   } catch (_) {}
+  // Fix Weebly nav layout — Weebly's main.js applies display:table to .container
+  // only when running on the real Weebly domain. We reapply after initialization.
+  setTimeout(function () {
+    var container = document.querySelector('.nav-wrap .container');
+    var logo = document.querySelector('.nav-wrap .logo');
+    var desktopNav = document.querySelector('.nav-wrap .nav.desktop-nav');
+    var membershipCart = document.querySelector('.nav-wrap .nav.membership-cart');
+    if (container && desktopNav) {
+      container.style.display = 'table';
+      container.style.width = '100%';
+      if (logo) { logo.style.display = 'table-cell'; logo.style.verticalAlign = 'middle'; }
+      desktopNav.style.display = 'table-cell';
+      desktopNav.style.textAlign = 'center';
+      desktopNav.style.verticalAlign = 'middle';
+      if (membershipCart) { membershipCart.style.display = 'table-cell'; membershipCart.style.verticalAlign = 'middle'; membershipCart.style.textAlign = 'right'; }
+    }
+  }, 500);
 })();
 </script>
 <base href="https://paragonaustin.com/">
@@ -883,7 +900,7 @@ if (document.documentElement.appReady || (window.inEditor && window.inEditor()))
 
 <h2 class="wsite-content-title" style="text-align:center;"><font size="3" color="#3f3f3f">EMAIL</font></h2>
 
-<div class="paragraph" style="text-align:center;"><a class="__cf_email__" data-cfemail="cebeafbcafa9a1a0a4a4afbbbdbaa7a08ea9a3afa7a2e0ada1a3" data-sr-dead>[email&#160;protected]</a></div>
+<div class="paragraph" style="text-align:center;"><a class="__cf_email__" data-cfemail="6212031003050d0c0808031711160b0c22050f030b0e4c010d0f" data-sr-dead>[email&#160;protected]</a></div>
 
 
 					
