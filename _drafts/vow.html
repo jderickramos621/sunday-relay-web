@@ -43,23 +43,6 @@
     var origOpen = window.open;
     window.open = function () { return null; };
   } catch (_) {}
-  // Fix Weebly nav layout — Weebly's main.js applies display:table to .container
-  // only when running on the real Weebly domain. We reapply after initialization.
-  setTimeout(function () {
-    var container = document.querySelector('.nav-wrap .container');
-    var logo = document.querySelector('.nav-wrap .logo');
-    var desktopNav = document.querySelector('.nav-wrap .nav.desktop-nav');
-    var membershipCart = document.querySelector('.nav-wrap .nav.membership-cart');
-    if (container && desktopNav) {
-      container.style.display = 'table';
-      container.style.width = '100%';
-      if (logo) { logo.style.display = 'table-cell'; logo.style.verticalAlign = 'middle'; }
-      desktopNav.style.display = 'table-cell';
-      desktopNav.style.textAlign = 'center';
-      desktopNav.style.verticalAlign = 'middle';
-      if (membershipCart) { membershipCart.style.display = 'table-cell'; membershipCart.style.verticalAlign = 'middle'; membershipCart.style.textAlign = 'right'; }
-    }
-  }, 500);
 })();
 </script>
 <base href="https://vowbjj.com/">
@@ -1979,29 +1962,6 @@ $(document).ready(function(){
   #sr-chat-btn { bottom: 20px !important; }
 </style>
 
-
-<script>
-(function () {
-  function loadWidget() {
-    if (document.getElementById('sr-widget-script')) return; // already loaded
-    var s = document.createElement('script');
-    s.id = 'sr-widget-script';
-    s.src = "http://localhost:4000/widget/vow.js";
-    s.async = true;
-    s.onerror = function () {
-      console.error('[Sunday Relay] Widget failed to load from', s.src);
-    };
-    s.onload = function () {
-      console.log('[Sunday Relay] Widget loaded.');
-    };
-    (document.head || document.documentElement).appendChild(s);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadWidget);
-  } else {
-    loadWidget();
-  }
-})();
-</script>
+<script src="http://localhost:4000/widget/vow.js" defer></script>
 </body>
 </html>
