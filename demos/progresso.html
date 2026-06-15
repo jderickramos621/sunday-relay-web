@@ -1425,12 +1425,30 @@ document.addEventListener('click', function(event) {
   ">See how it works &rarr;</a>
 </div> -->
 <style>
-  body { padding-top: 56px !important; }
-  #sr-drawer { top: 56px !important; height: calc(100vh - 56px) !important; }
-  #sr-chat-btn { bottom: 20px !important; }
+  @media (min-width: 721px) {
+  /* the actual fixed element is the header's inner container */
+  header.elementor-location-header > .e-con.e-parent {
+    transition: right 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+                left  0.36s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  body.sr-open header.elementor-location-header > .e-con.e-parent {
+    left: 0 !important;
+    right: 420px !important;
+    width: auto !important;
+  }
+  #sr-drawer .sr-head {
+  height: 75.33px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+}
 </style>
 
-<script async src="https://api.sundayrelay.com/widget/progresso.js" defer></script>
+<!-- <script src="https://api.sundayrelay.com/widget/progresso.js" defer></script> -->
+<script src="http://localhost:4000/widget/progresso.js" defer></script>
 
 </body>
 </html>
